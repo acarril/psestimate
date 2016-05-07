@@ -1,4 +1,4 @@
-*! 1.0 Alvaro Carril 06may2016
+*! 1.0.1 Alvaro Carril 07may2016
 program define psestimate
 	version 12
 	
@@ -32,14 +32,23 @@ local llrt_max = `C_lin' // set equal to linear threshold to start while loop
 *-------------------------------------------------------------------------------
 * Select first order covariates (steps 1-5)
 *-------------------------------------------------------------------------------
+* Estimate base model:
 qui logit `treatvar' `h'
 estimates store null
+
+* Indicate progress of first order covaraites loop:
+local N_foc : list sizeof totry
+nois _dots 0, reps(`N_foc') title(Selecting first order covariates...)
+local rep 1
+
 while `llrt_max' >= `C_lin' {
 	local llrt_max = `C_lin'
 	foreach v of varlist `totry' {
 		qui logit `treatvar' `h' `v'
 		estimates store alternative_`v'
 		qui lrtest null alternative_`v', force
+		local success = `r(chi2)' >= `llrt_max' // update success for progress bar
+		nois _dots `rep++' `=-`success'' // update progress bar
 		if (`r(chi2)' >= `llrt_max') {
 			local v_max `v' // store covariate with max llrt stats
 			local llrt_max = `r(chi2)' // update maximum llrt stat
@@ -52,10 +61,11 @@ while `llrt_max' >= `C_lin' {
 		local K_l `K_l' `v_max'
 		local h `K_b' `K_l' `K_q'
 		local totry: list totry - v_max
-		local v_max 
+		local v_max
+		local success
 	}
 	else {
-		di as text "Selected first order covariates are: " as result "`K_l'"
+		di as text _newline "Selected first order covariates are: " as result "`K_l'"
 		estimates drop alternative_*
 		continue, break
 	}
@@ -102,6 +112,11 @@ local quadvars `totry' // preserve list of all quadratic terms to try
 
 * Select second order terms
 *-------------------------------------------------------------------------------
+* Indicate progress of first order covaraites loop:
+local N_foc : list sizeof totry
+nois _dots 0, reps(`N_foc') title(Selecting first order covariates...)
+local rep 1
+
 local llrt_max = `C_qua'
 while `llrt_max' >= `C_qua' {
 	local llrt_max = `C_qua'
@@ -109,6 +124,8 @@ while `llrt_max' >= `C_qua' {
 		qui logit `treatvar' `h' `v', vce(robust)
 		estimates store alternative_`v'
 		qui lrtest null alternative_`v', force
+		local success = `r(chi2)' >= `llrt_max' // update success for progress bar
+		nois _dots `rep++' `=-`success'' // update progress bar
 		if (`r(chi2)' >= `llrt_max') {
 			local v_max `v' // store covariate with max llrt stats
 			local llrt_max = `r(chi2)' // update maximum llrt stat
@@ -124,7 +141,7 @@ while `llrt_max' >= `C_qua' {
 		local v_max 
 	}
 	else {
-		di as text "Selected second order covariates are: " as result "`K_q'"
+		di as text _newline "Selected second order covariates are: " as result "`K_q'"
 		predict ps if e(sample) == 1, pr // creates PS hat
 		gen log_odds = ln(ps / (1 - ps)) // creates log odds ratio
 		lab var log_odds "Log odds ratio"
