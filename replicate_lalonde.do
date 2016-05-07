@@ -23,7 +23,7 @@ drop *78
 psestimate treat re* u*
 
 *******
-
+/*
 gen u = runiform()
 sort u
 
