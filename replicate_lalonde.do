@@ -1,3 +1,4 @@
+discard
 cd "/Users/alvaro/Library/Application Support/Stata/ado/personal/psestimate"
 use nswre74, clear
 foreach k in 74 75 78 {
