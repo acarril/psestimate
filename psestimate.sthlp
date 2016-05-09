@@ -18,6 +18,7 @@
 {opt cq:uadratic(real)}
 {opt genps:hat(newvar)}
 {opt genl:or(newvar)}
+{opt noq:uad}
 ]
 {p_end}
 
@@ -30,6 +31,7 @@
 {synopt:{opt cq:uadratic}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
 {synopt:{opt genps:hat}} generate new variable with PS estimation{p_end}
 {synopt:{opt genl:or}} generate new variable with log odds ratio{p_end}
+{synopt:{opt noq:uad}} prevent algorithm of testing quadratic terms{p_end}
 
 {p 4 6 2}
 
@@ -55,18 +57,33 @@ This second process of selecting and including additional quadratic terms is car
 {title:Options}
 
 {phang}
-{opt t:otry(varlist)} specifies the vector of covariates to try into the first and second order terms.
+{opt totry(varlist)} specifies the vector of covariates from which the first and second order terms are going to be selected.
 The default is to include all variables in the dataset, exluding the {depvar} and other base model covariates indicated in {indepvars} (if any).
 
 {phang}
-{opt cl:inear(real)} specifies the threshold value used for the addition of first order (linear) terms.
-The decision is based on a likelihood ratio test statistic for the null hypothesis that the coefficient of the additional first order term is equal to zero.
+{opt clinear(real)} specifies the threshold value used for the addition of first order (linear) terms.
+The decision is based on the likelihood ratio test statistic for the null hypothesis that the coefficient of the additional first order term is equal to zero.
+See {manhelp lrtest R:lrtest} for additional information.
 Default value is 1.
 
 {phang}
-{opt cq:uadratic(real)} specifies the threshold value used for the addition of second order (quadratic) terms.
-The decision is based on a likelihood ratio test statistic for the null hypothesis that the coefficient of the additional second order term is equal to zero.
+{opt cquadratic(real)} specifies the threshold value used for the addition of second order (quadratic) terms.
+The decision is based on the likelihood ratio test statistic for the null hypothesis that the coefficient of the additional second order term is equal to zero.
+See {manhelp lrtest R:lrtest} for additional information.
 Default value is 2.71.
+
+{phang}
+{opt genpshat(newvar)} specifies that a new variable with the propensity scores estimate is generated.
+If not specified, the {opt genlor(newvar)} option does nothing.
+
+{phang}
+{opt genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated.
+This option does nothing if {opt genpshat(newvar)} is not specified.
+
+{phang}
+{opt noquad} prevents that the algorithm tests quadratic terms, ending when all linear terms have been added.
+It can be useful to speed up the algorithm.
+If specified, option {opt cquadratic(real)} does nothing.
 
 {title:Examples}
 
@@ -87,6 +104,9 @@ Default value is 2.71.
 {synopt:{cmd:r(K_q)}}quadratic terms{p_end}
 {synopt:{cmd:r(h)}}full model{p_end}
 {p2colreset}{...}
+
+{pstd}
+Additionally, {cmd:psestimate} stores all results stored in {cmd:e()} by {manhelp logit R:logit}.
 
 {title:Author}
 
