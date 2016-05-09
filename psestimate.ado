@@ -2,7 +2,7 @@
 program define psestimate, rclass
 	version 12
 	
-syntax varlist(min=1) [if] [, ///
+syntax varlist(min=1) [if] [in] [, ///
 	Totry(varlist) ///
 	CLinear(real 1) ///
 	CQuadratic(real 2.71) ///
