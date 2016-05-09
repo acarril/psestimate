@@ -70,22 +70,45 @@ Default value is 1.
 {opt cquadratic(real)} specifies the threshold value used for the addition of second order (quadratic) terms.
 The decision is based on the likelihood ratio test statistic for the null hypothesis that the coefficient of the additional second order term is equal to zero.
 See {manhelp lrtest R:lrtest} for additional information.
+If the {opt noquad} option is specified, then this option is irrelevant.
 Default value is 2.71.
 
 {phang}
-{opt genpshat(newvar)} specifies that a new variable with the propensity scores estimate is generated.
-If not specified, the {opt genlor(newvar)} option does nothing.
+{opt genpshat(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
 
 {phang}
-{opt genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated.
-This option does nothing if {opt genpshat(newvar)} is not specified.
+{opt genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
 
 {phang}
 {opt noquad} prevents that the algorithm tests quadratic terms, ending when all linear terms have been added.
 It can be useful to speed up the algorithm.
-If specified, option {opt cquadratic(real)} does nothing.
+If specified, option {opt cquadratic(real)} is irrelevant.
 
 {title:Examples}
+
+{pstd}
+For these examples I use the "Lalonde Experimental Data (Dehejia-Wahba Sample), corresponding to the data analyzed by Dehejia and Wahba (1999) and available on Dehejia's website.
+The dataset contains 445 observations with information on treatment status and various other characteristics.
+
+{hline}
+{pstd}Setup{p_end}
+{phang2}{cmd:. use nswre74}{p_end}
+
+{pstd}Select PS model for treatment variable{p_end}
+{phang2}{cmd:. psestimate treat}{p_end}
+
+{pstd}Select PS model from restricted list of covariates and lowered quadratic threshold{p_end}
+{phang2}{cmd:. psestimate treat, totry(age-nodeg re*) cquad(.8)}{p_end}
+
+{pstd}Select PS model with income and unemployment dummies as basic covariates{p_end}
+{phang2}{cmd:. psestimate treat re* u*}{p_end}
+
+{pstd}Estimate PS with no quadratic terms{p_end}
+{phang2}{cmd:. psestimate treat, genpshat(p_score) noquad}{p_end}
+
+{pstd}Estimate log odds ratio {p_end}
+{phang2}{cmd:. psestimate treat, genlor(logodds)}{p_end}
+
 
 {title:Stored results}
 
@@ -119,7 +142,7 @@ acarril@fen.uchile.cl
 
 {pstd}
 This program started as a refinement of Juan Ignacio Elorrieta's work for Bustos, Pomeranz and Zucman (forthcoming).
-Juan Ignacio's code provided a significant headstart, while comments from Dina Pomeranz and Sebasti√°n Bustos helped to fine tune the program. All remaining errors are my own.
+Juan Ignacio's code provided a significant headstart, while comments from Dina Pomeranz and Sebasti·n Bustos helped to fine tune the program. All remaining errors are my own.
 
 {title:References}
 {marker imbens_rubin_2015}
