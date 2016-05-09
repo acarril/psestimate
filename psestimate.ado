@@ -176,13 +176,22 @@ return scalar C_q = `C_qua'
 return scalar C_l = `C_lin'
 * Estimate final model to save eresults
 qui logit `treatvar' `h' if `touse'
-* Generate PS hat and generate log odds ratio 
-tempvar `genpshat' `genlor'
-if "`genpshat'" != "" {
-	qui predict `genpshat' if e(sample) == 1, pr
-	if "`genlor'" != "" {
-		qui gen `genlor' = ln(`genpshat'/(1-`genpshat')) if `touse'
-		lab var `genlor' "Log odds ratio"
+* Generate PS hat and generate log odds ratio
+tempvar `genpshat' `genlor' ps
+qui predict `ps' if e(sample) == 1, pr
+if "`genlor'" != "" {
+	qui gen `genlor' = ln(`ps'/(1-`ps')) if `touse'
+	lab var `genlor' "Log odds ratio"
+	if "`genpshat'" != "" {
+		qui rename `ps' `genpshat'
+		lab var `genpshat' "Propensity score"
+		order `genpshat' `genlor', last
+	}
+}
+else {
+	if "`genpshat'" != "" {
+		qui rename `ps' `genpshat'
+		lab var `genpshat' "Propensity Score"
 	}
 }
 end

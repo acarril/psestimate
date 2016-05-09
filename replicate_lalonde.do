@@ -21,4 +21,4 @@ drop *78
 * PSM algorithm
 ********************************************************************************
 
-psestimate treat re* u*, genlor(log_odds)
+psestimate treat re* u*, genlor(LOR) 
