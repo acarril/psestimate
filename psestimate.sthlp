@@ -40,24 +40,35 @@
 {pstd}
 The {cmd:psestimate} command estimates the propensity score proposed by {help psestimate##imbens_rubin_2015:Imbens and Rubin (2015)}.
 In particular, it implements the algorithm outlined by {help psestimate##imbens_2015:Imbens (2015)}, which estimates the propensity score for a binary dependent variable indicating treatment status.
-A subset of covariates may be explicitly included in the linear part of the specification as independent variables.
+The main purpose of the program is to select a quadratic (or linear) function of covariates to include in the estimation function of the propensity score.
 
 {pstd}
-The algorithm chooses first order terms from all remaining variables of the dataset, unless a subset of variables is specified with the {opth t:otry(varlist)} option.
+A binary treatment variable must be specified as {help depvar:dependent variable}.
+A subset of covariates may be explicitly included in the linear part of the specification as {help indepvars:independent variables}.
+This initial configuration corresponds to the base model.
+
+{pstd}
+The algorithm selects first order terms from all remaining variables of the dataset (i.e. excluding variables of the base model),
+unless a subset of variables is specified with the {opth totry(varlist)} option.
+
+{pstd}
 The selection of first order terms is performed in a stepwise fashion, comparing the base (nested) model to a model with one single additional covariate.
-A likelihood ratio test (LRT; see {help lrtest}) to test the null hypothesis of the non-significance of the additional coefficient is performed.
-A comparison is made for all remaining covariates, selecting the covariate associated with the highest LRT statistic.
+A likelihood ratio test (LRT) to test the null hypothesis of the non-significance of the additional coefficient is performed (see {help lrtest}).
+All covariates that have not been included are tested and the algorithm selects the one associated with the highest LRT statistic,
+unless no covariate meets the LRT statistic threshold specified in {opth clinear(real)}. 
 This covariate is then included in the model.
 
 {pstd}
-The process of selecting and including additional linear terms is carried out until the highest LRT statistic is less than {opt cl:inear(real)} or there are no remaining covariates to add.
-Then the algorithm chooses second order terms only from covariates selected for the linear specification, performing analogue tests for selection among all interactions and quadratic terms.
-This second process of selecting and including additional quadratic terms is carried out until the highest LRT statistic is less than {opt cq:uadratic(real)} or there are no remaining covariates to add.
+The process of selecting and including additional linear terms is carried out until the highest LRT statistic is less than {opt clinear(real)} or there are no remaining covariates to add.
+
+{pstd}
+The algorithm chooses second order terms only from covariates selected for the linear specification, performing analogue tests for selection among all interactions and quadratic terms.
+This second process of selecting and including additional quadratic terms is carried out until the highest LRT statistic is less than {opt cquadratic(real)} or there are no remaining quadratic terms to add.
 
 {title:Options}
 
 {phang}
-{opt totry(varlist)} specifies the vector of covariates from which the first and second order terms are going to be selected.
+{opth totry(varlist)} specifies the vector of covariates from which the first and second order terms are going to be selected.
 The default is to include all variables in the dataset, exluding the {depvar} and other base model covariates indicated in {indepvars} (if any).
 
 {phang}
@@ -74,10 +85,10 @@ If the {opt noquad} option is specified, then this option is irrelevant.
 Default value is 2.71.
 
 {phang}
-{opt genpscore(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
+{opth genpscore(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
 
 {phang}
-{opt genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
+{opth genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
 
 {phang}
 {opt noquad} prevents that the algorithm tests quadratic terms, ending when all linear terms have been added.
