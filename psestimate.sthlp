@@ -1,23 +1,23 @@
 {smcl}
-{* *! version 1.0.1 May 2016}{...}
+{* *! version 1.0.2 May 2016}{...}
 {cmd:help psestimate}{...}
 {hline}
 
 {title:Title}
 
 {pstd}
-{hi:psestimate} {hline 2} Estimate the propensity score proposed by Imbens and Rubin (2015)
+{hi:psestimate} {hline 2} Estimate the propensity score proposed by {help psestimate##imbens_rubin_2015:Imbens and Rubin (2015)}
 
 {title:Syntax}
 
 {p 8 16 2}
 {cmd:psestimate} {depvar} [{indepvars}] [{help if}] [{help in}]
 [,
-{opt t:otry(varlist)}
+{opth t:otry(varlist)}
 {opt cl:inear(real)}
 {opt cq:uadratic(real)}
-{opt genps:hat(newvar)}
-{opt genl:or(newvar)}
+{opth genps:core(newvar)}
+{opth genl:or(newvar)}
 {opt noq:uad}
 ]
 {p_end}
@@ -26,11 +26,11 @@
 {synopthdr}
 {synoptline}
 {synoptset 20 tabbed}{...}
-{synopt:{opt t:otry}} specify list of covariates to try; default is all{p_end}
-{synopt:{opt cl:inear}} threshold value for likelihood ratio test of first order covariates; default is 1{p_end}
-{synopt:{opt cq:uadratic}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
-{synopt:{opt genps:hat}} generate new variable with PS estimation{p_end}
-{synopt:{opt genl:or}} generate new variable with log odds ratio{p_end}
+{synopt:{opth t:otry(varlist)}} specify list of covariates to try; default is all{p_end}
+{synopt:{opt cl:inear(real)}} threshold value for likelihood ratio test of first order covariates; default is 1{p_end}
+{synopt:{opt cq:uadratic(real)}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
+{synopt:{opth genps:core(newvar)}} generate new variable with propensity score estimation{p_end}
+{synopt:{opth genl:or(newvar)}} generate new variable with log odds ratio{p_end}
 {synopt:{opt noq:uad}} prevent algorithm of testing quadratic terms{p_end}
 
 {p 4 6 2}
@@ -43,7 +43,7 @@ In particular, it implements the algorithm outlined by {help psestimate##imbens_
 A subset of covariates may be explicitly included in the linear part of the specification as independent variables.
 
 {pstd}
-The algorithm chooses first order terms from all remaining variables of the dataset, unless a subset of variables is specified with the {opt t:otry(varlist)} option.
+The algorithm chooses first order terms from all remaining variables of the dataset, unless a subset of variables is specified with the {opth t:otry(varlist)} option.
 The selection of first order terms is performed in a stepwise fashion, comparing the base (nested) model to a model with one single additional covariate.
 A likelihood ratio test (LRT; see {help lrtest}) to test the null hypothesis of the non-significance of the additional coefficient is performed.
 A comparison is made for all remaining covariates, selecting the covariate associated with the highest LRT statistic.
@@ -74,7 +74,7 @@ If the {opt noquad} option is specified, then this option is irrelevant.
 Default value is 2.71.
 
 {phang}
-{opt genpshat(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
+{opt genpscore(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
 
 {phang}
 {opt genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
@@ -87,10 +87,9 @@ If specified, option {opt cquadratic(real)} is irrelevant.
 {title:Examples}
 
 {pstd}
-For these examples I use the "Lalonde Experimental Data (Dehejia-Wahba Sample), corresponding to the data analyzed by Dehejia and Wahba (1999) and available on Dehejia's website.
+For these examples I use the "Lalonde Experimental Data (Dehejia-Wahba Sample)", corresponding to the data analyzed by {help psestimate##DW_1999:Dehejia and Wahba (1999)} and available on Dehejia's website.
 The dataset contains 445 observations with information on treatment status and various other characteristics.
 
-{hline}
 {pstd}Setup{p_end}
 {phang2}{cmd:. use nswre74}{p_end}
 
@@ -101,10 +100,13 @@ The dataset contains 445 observations with information on treatment status and v
 {phang2}{cmd:. psestimate treat, totry(age-nodeg re*) cquad(.8)}{p_end}
 
 {pstd}Select PS model with income and unemployment dummies as basic covariates{p_end}
+{phang2}{cmd:. foreach k in 74 75 78 {c -(}} {p_end}
+{phang2}{cmd:.	gen u`k' = (re`k'==0)}{p_end}
+{phang2}{cmd:. }}{p_end}
 {phang2}{cmd:. psestimate treat re* u*}{p_end}
 
 {pstd}Estimate PS with no quadratic terms{p_end}
-{phang2}{cmd:. psestimate treat, genpshat(p_score) noquad}{p_end}
+{phang2}{cmd:. psestimate treat, genpscore(ps) noquad}{p_end}
 
 {pstd}Estimate log odds ratio {p_end}
 {phang2}{cmd:. psestimate treat, genlor(logodds)}{p_end}
@@ -129,7 +131,7 @@ The dataset contains 445 observations with information on treatment status and v
 {p2colreset}{...}
 
 {pstd}
-Additionally, {cmd:psestimate} stores all results stored in {cmd:e()} by {manhelp logit R:logit}.
+Additionally, {cmd:psestimate} stores all results stored in {cmd:e()} by {manhelp logit R:logit} after fitting the final model with all selected terms.
 
 {title:Author}
 
@@ -145,7 +147,19 @@ This program started as a refinement of Juan Ignacio Elorrieta's work for Bustos
 Juan Ignacio's code provided a significant headstart, while comments from Dina Pomeranz and Sebastián Bustos helped to fine tune the program. All remaining errors are my own.
 
 {title:References}
-{marker imbens_rubin_2015}
-{phang}Imbens, Guido W. and Donald B. Rubin. 2015. {it: Causal Inference in Statistics, Social, and Biomedical Sciences}. New York: Cambridge University Press.
-{marker imbens_2015}
-{phang}Imbens, Guido W. 2015. "Matching Methods in Practice: Three Examples". {it:Journal of Human Resources} 50(2): 373-419.
+
+{marker DW_1999}{...}
+{phang}Dehejia, Rajeev H. and Sadek Wahba. 1999.
+"Causal Effects in Nonexperimental Studies".
+{it:Journal of the American Statistical Association} 94(448): 1053-1062.
+
+{marker imbens_rubin_2015}{...}
+{phang}Imbens, Guido W. and Donald B. Rubin. 2015.
+{it: Causal Inference in Statistics, Social, and Biomedical Sciences}.
+New York: Cambridge University Press.
+
+{marker imbens_2015}{...}
+{phang}Imbens, Guido W. 2015.
+"Matching Methods in Practice: Three Examples".
+{it:Journal of Human Resources} 50(2): 373-419.
+{p_end}
