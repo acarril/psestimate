@@ -161,8 +161,8 @@ return local K_q `K_q'
 return local K_l `K_l'
 return local K_b `K_b'
 return local tvar `treatvar'
-return local C_q `C_qua'
-return local C_l `C_lin'
+return scalar C_q = `C_qua'
+return scalar C_l = `C_lin'
 
 di as text "Final model is: " as result "`h'"
 
