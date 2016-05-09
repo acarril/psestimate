@@ -8,6 +8,7 @@ syntax varlist(min=1) [if] [in] [, ///
 	CQuadratic(real 2.71) ///
 	GENPShat(name) ///
 	GENLor(name) ///
+	noQuad ///
 	]
 
 marksample touse
@@ -105,6 +106,7 @@ forval i = 1/`num_h' {
 
 * Generate quadratic varaibles from linear model
 *-------------------------------------------------------------------------------
+if "`quad'" != "noquad" { 
 * Collect dummies
 qui ds `h', has(type numeric)
 local h_numeric `r(varlist)'
@@ -161,6 +163,7 @@ while `llrt_max' >= `C_qua' {
 		continue, break
 	}
 }
+}
 * Show final model
 di as text "Final model is: " as result "`h'"
 * Save return results
@@ -175,10 +178,11 @@ return scalar C_l = `C_lin'
 qui logit `treatvar' `h' if `touse'
 * Generate PS hat and generate log odds ratio 
 tempvar `genpshat' `genlor'
-if "`genpshat'" != "" qui predict `genpshat' if e(sample) == 1, pr
-if "`genlor'" != "" {
-	qui gen `genlor' = ln(`genpshat'/(1-`genpshat')) if `touse'
-	lab var `genlor' "Log odds ratio"
+if "`genpshat'" != "" {
+	qui predict `genpshat' if e(sample) == 1, pr
+	if "`genlor'" != "" {
+		qui gen `genlor' = ln(`genpshat'/(1-`genpshat')) if `touse'
+		lab var `genlor' "Log odds ratio"
+	}
 }
-
 end
