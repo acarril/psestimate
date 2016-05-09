@@ -70,6 +70,24 @@ Default value is 2.71.
 
 {title:Examples}
 
+{title:Stored results}
+
+{pstd}
+{cmd:psestimate} stores the following in {cmd:r()}:
+
+{synoptset 15 tabbed}{...}
+{p2col 5 15 19 2: Scalars}{p_end}
+{synopt:{cmd:r(C_l)}}threshold value of linear terms{p_end}
+{synopt:{cmd:r(C_q)}}threshold value of quadratic terms{p_end}
+
+{p2col 5 15 19 2: Macros}{p_end}
+{synopt:{cmd:r(tvar)}}treatment variable{p_end}
+{synopt:{cmd:r(K_b)}}basic terms (explicitly included){p_end}
+{synopt:{cmd:r(K_l)}}linear terms{p_end}
+{synopt:{cmd:r(K_q)}}quadratic terms{p_end}
+{synopt:{cmd:r(h)}}full model{p_end}
+{p2colreset}{...}
+
 {title:Author}
 
 {pstd}
