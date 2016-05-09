@@ -128,7 +128,7 @@ local quadvars `totry' // preserve list of all quadratic terms to try
 *-------------------------------------------------------------------------------
 * Indicate progress of first order covaraites loop:
 local N_foc : list sizeof totry
-nois _dots 0, reps(`N_foc') title(Selecting first order covariates...)
+nois _dots 0, reps(`N_foc') title(Selecting second order covariates...)
 local rep 1
 
 local llrt_max = `C_qua'
