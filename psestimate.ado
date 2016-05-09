@@ -2,11 +2,22 @@
 program define psestimate, rclass
 	version 12
 	
-syntax varlist(min=1) [, Totry(varlist) CLinear(real 1) CQuadratic(real 2.71)]
+syntax varlist(min=1) [, ///
+	Totry(varlist) ///
+	CLinear(real 1) ///
+	CQuadratic(real 2.71) ///
+	GENPShat(name) ///
+	GENLor(name) ///
+	]
 
 *-------------------------------------------------------------------------------
 * Inputs
 *-------------------------------------------------------------------------------
+
+* Checks:
+foreach g in `genpshat' `genlor' {
+	if "`g'" != "" confirm new var `g'
+}
 
 * Extract treatment variable and base covariates from varlist
 local treatvar :	word 1 of `varlist'
@@ -149,12 +160,8 @@ while `llrt_max' >= `C_qua' {
 		continue, break
 	}
 }
-* Estimate PS hat and generate log odds ratio
-qui logit `treatvar' `h', vce(robust)
-predict ps if e(sample) == 1, pr
-gen log_odds = ln(ps/(1-ps))
-lab var log_odds "Log odds ratio"
-
+* Show final model
+di as text "Final model is: " as result "`h'"
 * Save return results
 return local h `h'
 return local K_q `K_q'
@@ -163,7 +170,14 @@ return local K_b `K_b'
 return local tvar `treatvar'
 return scalar C_q = `C_qua'
 return scalar C_l = `C_lin'
-
-di as text "Final model is: " as result "`h'"
+* Estimate final model to save eresults
+qui logit `treatvar' `h', vce(robust)
+* Generate PS hat and generate log odds ratio 
+tempvar `genpshat' `genlor'
+if "`genpshat'" != "" predict `genpshat' if e(sample) == 1, pr
+if "`genlor'" != "" {
+	gen `genlor' = ln(`genpshat'/(1-`genpshat'))
+	lab var `genlor' "Log odds ratio"
+}
 
 end

@@ -21,7 +21,7 @@ drop *78
 * PSM algorithm
 ********************************************************************************
 
-psestimate treat re* u*
+psestimate treat re* u*, genpshat(nodeg) genlor(lala)
 
 *******
 /*
