@@ -1,6 +1,6 @@
 *! 1.0.2 Alvaro Carril 09may2016
 program define psestimate, rclass
-	version 12
+	version 11
 	
 syntax varlist(min=1) [if] [in] [, ///
 	Totry(varlist) ///
