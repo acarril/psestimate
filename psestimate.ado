@@ -47,12 +47,11 @@ while `llrt_max' >= `C_lin' {
 		qui logit `treatvar' `h' `v'
 		estimates store alternative_`v'
 		qui lrtest null alternative_`v', force
-		local success = `r(chi2)' >= `llrt_max' // update success for progress bar
-		nois _dots `rep++' `=-`success'' // update progress bar
 		if (`r(chi2)' >= `llrt_max') {
 			local v_max `v' // store covariate with max llrt stats
 			local llrt_max = `r(chi2)' // update maximum llrt stat
 		}
+	nois _dots `rep++' 0
 	}
 	if "`v_max'" != "" {
 		qui estimates restore alternative_`v_max' // restore computed estimates for selected covariate
@@ -62,7 +61,8 @@ while `llrt_max' >= `C_lin' {
 		local h `K_b' `K_l' `K_q'
 		local totry: list totry - v_max
 		local v_max
-		local success
+		local success = -1 // update success for progress bar
+		nois _dots `rep++' `success' // update progress bar
 	}
 	else {
 		di as text _newline "Selected first order covariates are: " as result "`K_l'"
@@ -124,12 +124,11 @@ while `llrt_max' >= `C_qua' {
 		qui logit `treatvar' `h' `v', vce(robust)
 		estimates store alternative_`v'
 		qui lrtest null alternative_`v', force
-		local success = `r(chi2)' >= `llrt_max' // update success for progress bar
-		nois _dots `rep++' `=-`success'' // update progress bar
 		if (`r(chi2)' >= `llrt_max') {
 			local v_max `v' // store covariate with max llrt stats
 			local llrt_max = `r(chi2)' // update maximum llrt stat
 		}
+	nois _dots `rep++' 0
 	}
 	if "`v_max'" != "" {
 		qui estimates restore alternative_`v_max' // restore computed estimates for selected covariate
@@ -138,7 +137,9 @@ while `llrt_max' >= `C_qua' {
 		local K_q `K_q' `v_max'
 		local h `K_b' `K_l' `K_q'
 		local totry: list totry - v_max
-		local v_max 
+		local v_max
+		local success = -1 // update success for progress bar
+		nois _dots `rep++' `success' // update progress bar
 	}
 	else {
 		di as text _newline "Selected second order covariates are: " as result "`K_q'"
