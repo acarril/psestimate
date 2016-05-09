@@ -21,15 +21,4 @@ drop *78
 * PSM algorithm
 ********************************************************************************
 
-psestimate treat re* u*, genpshat(nodeg) genlor(lala)
-
-*******
-/*
-gen u = runiform()
-sort u
-
-sum log_odds
-local caliper = .2
-local caliper_value = `caliper' * `r(sd)'
-
-psmatch2 treat, pscore(log_odds) noreplacement descending caliper(`caliper_value')
+psestimate treat re* u* if age>25, genpshat(ps) genlor(log_odds)

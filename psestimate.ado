@@ -2,7 +2,7 @@
 program define psestimate, rclass
 	version 12
 	
-syntax varlist(min=1) [, ///
+syntax varlist(min=1) [if] [, ///
 	Totry(varlist) ///
 	CLinear(real 1) ///
 	CQuadratic(real 2.71) ///
@@ -10,6 +10,7 @@ syntax varlist(min=1) [, ///
 	GENLor(name) ///
 	]
 
+marksample touse
 *-------------------------------------------------------------------------------
 * Inputs
 *-------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ local llrt_max = `C_lin' // set equal to linear threshold to start while loop
 * Select first order covariates (steps 1-5)
 *-------------------------------------------------------------------------------
 * Estimate base model:
-qui logit `treatvar' `h'
+qui logit `treatvar' `h' if `touse'
 estimates store null
 
 * Indicate progress of first order covaraites loop:
@@ -55,7 +56,7 @@ local rep 1
 while `llrt_max' >= `C_lin' {
 	local llrt_max = `C_lin'
 	foreach v of varlist `totry' {
-		qui logit `treatvar' `h' `v'
+		qui logit `treatvar' `h' `v' if `touse'
 		estimates store alternative_`v'
 		qui lrtest null alternative_`v', force
 		if (`r(chi2)' >= `llrt_max') {
@@ -94,7 +95,7 @@ forval i = 1/`num_h' {
   forval j = 1/`=`i'-1' {
     local x : word `i' of `h'
     local y : word `j' of `h'
-    generate `x'X`y' = `x' * `y'
+    qui generate `x'X`y' = `x' * `y' if `touse'
 	local labx : variable label `x'
 	local laby : variable label `y'
 	if (!missing("`labx'") & !missing("`laby'")) label var `x'X`y' `"`labx' X `laby'"'
@@ -113,7 +114,7 @@ foreach v of local h_numeric {
 }
 
 foreach z of local nondummy {
-	gen `z'_2 = `z'^2
+	qui gen `z'_2 = `z'^2
 	local labz : variable label `z'
 	if !missing("`labz'") label var `z'_2 `"`labz' squared"'
 	local totry `totry' `z'_2
@@ -132,7 +133,7 @@ local llrt_max = `C_qua'
 while `llrt_max' >= `C_qua' {
 	local llrt_max = `C_qua'
 	foreach v of varlist `totry' {
-		qui logit `treatvar' `h' `v', vce(robust)
+		qui logit `treatvar' `h' `v' if `touse'
 		estimates store alternative_`v'
 		qui lrtest null alternative_`v', force
 		if (`r(chi2)' >= `llrt_max') {
@@ -171,12 +172,12 @@ return local tvar `treatvar'
 return scalar C_q = `C_qua'
 return scalar C_l = `C_lin'
 * Estimate final model to save eresults
-qui logit `treatvar' `h', vce(robust)
+qui logit `treatvar' `h' if `touse'
 * Generate PS hat and generate log odds ratio 
 tempvar `genpshat' `genlor'
-if "`genpshat'" != "" predict `genpshat' if e(sample) == 1, pr
+if "`genpshat'" != "" qui predict `genpshat' if e(sample) == 1, pr
 if "`genlor'" != "" {
-	gen `genlor' = ln(`genpshat'/(1-`genpshat'))
+	qui gen `genlor' = ln(`genpshat'/(1-`genpshat')) if `touse'
 	lab var `genlor' "Log odds ratio"
 }
 
