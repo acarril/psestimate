@@ -11,8 +11,14 @@
 {title:Syntax}
 
 {p 8 16 2}
-{cmd:psestimate} {depvar} [{indepvars}]
-[, {opt t:otry(varlist)} {opt cl:inear(real)} {opt cq:uadratic(real)}]
+{cmd:psestimate} {depvar} [{indepvars}] [{help if}] [{help in}]
+[,
+{opt t:otry(varlist)}
+{opt cl:inear(real)}
+{opt cq:uadratic(real)}
+{opt genps:hat(newvar)}
+{opt genl:or(newvar)}
+]
 {p_end}
 
 {synoptset 20 tabbed}{...}
@@ -22,6 +28,9 @@
 {synopt:{opt t:otry}} specify list of covariates to try; default is all{p_end}
 {synopt:{opt cl:inear}} threshold value for likelihood ratio test of first order covariates; default is 1{p_end}
 {synopt:{opt cq:uadratic}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
+{synopt:{opt genps:hat}} generate new variable with PS estimation{p_end}
+{synopt:{opt genl:or}} generate new variable with log odds ratio{p_end}
+
 {p 4 6 2}
 
 {title:Description}
