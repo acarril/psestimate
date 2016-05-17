@@ -1,4 +1,4 @@
-*! 1.0.2 Alvaro Carril 09may2016
+*! 1.1.1 Alvaro Carril 17may2016
 program define psestimate, rclass
 	version 11
 	
@@ -15,7 +15,7 @@ marksample touse
 *-------------------------------------------------------------------------------
 * Inputs
 *-------------------------------------------------------------------------------
-
+di "holo"
 * Checks:
 foreach g in `genpshat' `genlor' {
 	if "`g'" != "" confirm new var `g'
@@ -57,12 +57,14 @@ local rep 1
 while `llrt_max' >= `C_lin' {
 	local llrt_max = `C_lin'
 	foreach v of varlist `totry' {
-		qui logit `treatvar' `h' `v' if `touse'
-		estimates store alternative_`v'
-		qui lrtest null alternative_`v', force
-		if (`r(chi2)' >= `llrt_max') {
-			local v_max `v' // store covariate with max llrt stats
-			local llrt_max = `r(chi2)' // update maximum llrt stat
+		capture quietly logit `treatvar' `h' `v' if `touse'
+		if _rc == 0 {
+			estimates store alternative_`v'
+			qui lrtest null alternative_`v', force
+			if (`r(chi2)' >= `llrt_max') {
+				local v_max `v' // store covariate with max llrt stats
+				local llrt_max = `r(chi2)' // update maximum llrt stat
+			}
 		}
 	nois _dots `rep++' 0
 	}
@@ -135,7 +137,7 @@ local llrt_max = `C_qua'
 while `llrt_max' >= `C_qua' {
 	local llrt_max = `C_qua'
 	foreach v of varlist `totry' {
-		qui logit `treatvar' `h' `v' if `touse'
+		capture quietly `treatvar' `h' `v' if `touse'
 		estimates store alternative_`v'
 		qui lrtest null alternative_`v', force
 		if (`r(chi2)' >= `llrt_max') {
