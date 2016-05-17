@@ -137,12 +137,14 @@ local llrt_max = `C_qua'
 while `llrt_max' >= `C_qua' {
 	local llrt_max = `C_qua'
 	foreach v of varlist `totry' {
-		capture quietly `treatvar' `h' `v' if `touse'
-		estimates store alternative_`v'
-		qui lrtest null alternative_`v', force
-		if (`r(chi2)' >= `llrt_max') {
-			local v_max `v' // store covariate with max llrt stats
-			local llrt_max = `r(chi2)' // update maximum llrt stat
+		capture quietly logit `treatvar' `h' `v' if `touse'
+		if _rc == 0 {
+			estimates store alternative_`v'
+			qui lrtest null alternative_`v', force
+			if (`r(chi2)' >= `llrt_max') {
+				local v_max `v' // store covariate with max llrt stats
+				local llrt_max = `r(chi2)' // update maximum llrt stat
+			}
 		}
 	nois _dots `rep++' 0
 	}
