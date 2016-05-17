@@ -15,7 +15,6 @@ marksample touse
 *-------------------------------------------------------------------------------
 * Inputs
 *-------------------------------------------------------------------------------
-di "holo"
 * Checks:
 foreach g in `genpshat' `genlor' {
 	if "`g'" != "" confirm new var `g'
@@ -109,64 +108,64 @@ forval i = 1/`num_h' {
 * Generate quadratic varaibles from linear model
 *-------------------------------------------------------------------------------
 if "`quad'" != "noquad" { 
-* Collect dummies
-qui ds `h', has(type numeric)
-local h_numeric `r(varlist)'
-foreach v of local h_numeric {
-	capture assert missing(`v') | inlist(`v', 0, 1)
-	if _rc != 0 local nondummy `nondummy' `v'
-}
+	* Collect dummies
+	qui ds `h', has(type numeric)
+	local h_numeric `r(varlist)'
+	foreach v of local h_numeric {
+		capture assert missing(`v') | inlist(`v', 0, 1)
+		if _rc != 0 local nondummy `nondummy' `v'
+	}
 
-foreach z of local nondummy {
-	qui gen `z'_2 = `z'^2
-	local labz : variable label `z'
-	if !missing("`labz'") label var `z'_2 `"`labz' squared"'
-	local totry `totry' `z'_2
-}
+	foreach z of local nondummy {
+		qui gen `z'_2 = `z'^2
+		local labz : variable label `z'
+		if !missing("`labz'") label var `z'_2 `"`labz' squared"'
+		local totry `totry' `z'_2
+	}
 
-local quadvars `totry' // preserve list of all quadratic terms to try
+	local quadvars `totry' // preserve list of all quadratic terms to try
 
-* Select second order terms
-*-------------------------------------------------------------------------------
-* Indicate progress of first order covaraites loop:
-local N_foc : list sizeof totry
-nois _dots 0, reps(`N_foc') title(Selecting second order covariates...)
-local rep 1
+	* Select second order terms
+	*-------------------------------------------------------------------------------
+	* Indicate progress of first order covaraites loop:
+	local N_foc : list sizeof totry
+	nois _dots 0, reps(`N_foc') title(Selecting second order covariates...)
+	local rep 1
 
-local llrt_max = `C_qua'
-while `llrt_max' >= `C_qua' {
 	local llrt_max = `C_qua'
-	foreach v of varlist `totry' {
-		capture quietly logit `treatvar' `h' `v' if `touse'
-		if _rc == 0 {
-			estimates store alternative_`v'
-			qui lrtest null alternative_`v', force
-			if (`r(chi2)' >= `llrt_max') {
-				local v_max `v' // store covariate with max llrt stats
-				local llrt_max = `r(chi2)' // update maximum llrt stat
+	while `llrt_max' >= `C_qua' {
+		local llrt_max = `C_qua'
+		foreach v of varlist `totry' {
+			capture quietly logit `treatvar' `h' `v' if `touse'
+			if _rc == 0 {
+				estimates store alternative_`v'
+				qui lrtest null alternative_`v', force
+				if (`r(chi2)' >= `llrt_max') {
+					local v_max `v' // store covariate with max llrt stats
+					local llrt_max = `r(chi2)' // update maximum llrt stat
+				}
 			}
+		nois _dots `rep++' 0
 		}
-	nois _dots `rep++' 0
+		if "`v_max'" != "" {
+			qui estimates restore alternative_`v_max' // restore computed estimates for selected covariate
+			estimates clear // clear all other estimates
+			estimates store null // update null model estimates with the selected covariate
+			local K_q `K_q' `v_max'
+			local h `K_b' `K_l' `K_q'
+			local totry: list totry - v_max
+			local v_max
+			local success = -1 // update success for progress bar
+			nois _dots `rep++' `success' // update progress bar
+		}
+		else {
+			di as text _newline "Selected second order covariates are: " as result "`K_q'"
+			local droplist: list quadvars - K_q
+			drop `droplist'
+			estimates drop _all
+			continue, break
+		}
 	}
-	if "`v_max'" != "" {
-		qui estimates restore alternative_`v_max' // restore computed estimates for selected covariate
-		estimates clear // clear all other estimates
-		estimates store null // update null model estimates with the selected covariate
-		local K_q `K_q' `v_max'
-		local h `K_b' `K_l' `K_q'
-		local totry: list totry - v_max
-		local v_max
-		local success = -1 // update success for progress bar
-		nois _dots `rep++' `success' // update progress bar
-	}
-	else {
-		di as text _newline "Selected second order covariates are: " as result "`K_q'"
-		local droplist: list quadvars - K_q
-		drop `droplist'
-		estimates drop _all
-		continue, break
-	}
-}
 }
 * Show final model
 di as text "Final model is: " as result "`h'"
