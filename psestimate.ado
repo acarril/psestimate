@@ -58,8 +58,8 @@ while `llrt_max' >= `C_lin' {
 	foreach v of varlist `totry' {
 		capture quietly logit `treatvar' `h' `v' if `touse'
 		if _rc == 0 {
-			estimates store alternative_`v'
-			qui lrtest null alternative_`v', force
+			estimates store `v'
+			qui lrtest null `v', force
 			if (`r(chi2)' >= `llrt_max') {
 				local v_max `v' // store covariate with max llrt stats
 				local llrt_max = `r(chi2)' // update maximum llrt stat
@@ -68,7 +68,7 @@ while `llrt_max' >= `C_lin' {
 	nois _dots `rep++' 0
 	}
 	if "`v_max'" != "" {
-		qui estimates restore alternative_`v_max' // restore computed estimates for selected covariate
+		qui estimates restore `v_max' // restore computed estimates for selected covariate
 		estimates clear // clear all other estimates
 		estimates store null // update null model estimates with the selected covariate
 		local K_l `K_l' `v_max'
@@ -80,7 +80,6 @@ while `llrt_max' >= `C_lin' {
 	}
 	else {
 		di as text _newline "Selected first order covariates are: " as result "`K_l'"
-		estimates drop alternative_*
 		continue, break
 	}
 }
@@ -138,8 +137,8 @@ if "`quad'" != "noquad" {
 		foreach v of varlist `totry' {
 			capture quietly logit `treatvar' `h' `v' if `touse'
 			if _rc == 0 {
-				estimates store alternative_`v'
-				qui lrtest null alternative_`v', force
+				estimates store `v'
+				qui lrtest null `v', force
 				if (`r(chi2)' >= `llrt_max') {
 					local v_max `v' // store covariate with max llrt stats
 					local llrt_max = `r(chi2)' // update maximum llrt stat
@@ -148,7 +147,7 @@ if "`quad'" != "noquad" {
 		nois _dots `rep++' 0
 		}
 		if "`v_max'" != "" {
-			qui estimates restore alternative_`v_max' // restore computed estimates for selected covariate
+			qui estimates restore `v_max' // restore computed estimates for selected covariate
 			estimates clear // clear all other estimates
 			estimates store null // update null model estimates with the selected covariate
 			local K_q `K_q' `v_max'
