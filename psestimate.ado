@@ -87,26 +87,26 @@ while `llrt_max' >= `C_lin' {
 *-------------------------------------------------------------------------------
 * Select second order covariates (steps 6-10)
 *-------------------------------------------------------------------------------
-
+if "`quad'" != "noquad" { 
 * Generate interactive variables from linear model
 *-------------------------------------------------------------------------------
-local num_h : word count `h'
-local totry // clear totry varlist
-forval i = 1/`num_h' {
-  forval j = 1/`=`i'-1' {
-    local x : word `i' of `h'
-    local y : word `j' of `h'
-    qui generate `x'X`y' = `x' * `y' if `touse'
-	local labx : variable label `x'
-	local laby : variable label `y'
-	if (!missing("`labx'") & !missing("`laby'")) label var `x'X`y' `"`labx' X `laby'"'
-	local totry `totry' `x'X`y'
-  }
-}
+	local num_h : word count `h'
+	local totry // clear totry varlist
+	forval i = 1/`num_h' {
+	  forval j = 1/`=`i'-1' {
+		local x : word `i' of `h'
+		local y : word `j' of `h'
+		qui generate `x'X`y' = `x' * `y' if `touse'
+		local labx : variable label `x'
+		local laby : variable label `y'
+		if (!missing("`labx'") & !missing("`laby'")) label var `x'X`y' `"`labx' X `laby'"'
+		local totry `totry' `x'X`y'
+	  }
+	}
 
 * Generate quadratic varaibles from linear model
 *-------------------------------------------------------------------------------
-if "`quad'" != "noquad" { 
+
 	* Collect dummies
 	qui ds `h', has(type numeric)
 	local h_numeric `r(varlist)'
