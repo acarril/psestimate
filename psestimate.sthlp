@@ -31,6 +31,7 @@
 {synopt:{opth t:otry(varlist)}} specify list of covariates to try; default is all{p_end}
 {synopt:{opt cl:inear(real)}} threshold value for likelihood ratio test of first order covariates; default is 1{p_end}
 {synopt:{opt cq:uadratic(real)}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
+{synopt:{opt iter:ate(#)}} perform maximum of # iterations in each logit; default is 16000{p_end}
 {synopt:{opth genps:core(newvar)}} generate new variable with propensity score estimation{p_end}
 {synopt:{opth genl:or(newvar)}} generate new variable with log odds ratio{p_end}
 {synopt:{opt nol:in}} prevent algorithm of testing linear terms{p_end}
@@ -49,6 +50,7 @@ The main purpose of the program is to select a quadratic (or linear) function of
 A binary treatment variable must be specified as {help depvar:dependent variable}.
 A subset of covariates may be explicitly included in the linear part of the specification as {help indepvars:independent variables}.
 This initial configuration corresponds to the base model.
+All specifications are fitted with a {manhelp logit R:logit} model by maximum likelihood.
 
 {pstd}
 The algorithm selects first order terms from all remaining variables of the dataset (i.e. excluding variables of the base model),
@@ -56,7 +58,7 @@ unless a subset of variables is specified with the {opth totry(varlist)} option.
 
 {pstd}
 The selection of first order terms is performed in a stepwise fashion, comparing the base (nested) model to a model with one single additional covariate.
-A likelihood ratio test (LRT) to test the null hypothesis of the non-significance of the additional coefficient is performed (see {help lrtest}).
+A likelihood ratio test (LRT) to test the null hypothesis of the non-significance of the additional coefficient is performed (see {manhelp lrtest R:lrtest}).
 All covariates that have not been included are tested and the algorithm selects the one associated with the highest LRT statistic,
 unless no covariate meets the LRT statistic threshold specified in {opth clinear(real)}. 
 This covariate is then included in the model.
@@ -88,6 +90,11 @@ If the {opt noquad} option is specified, then this option is irrelevant.
 Default value is 2.71.
 
 {phang}
+{opt iterate(#)} specifies the maximum number of iterations in each logit estimation.
+Default value is 1600.
+See {manhelp logit R:logit} and {manhelp maximize R:maximize} for additional information.
+
+{phang}
 {opth genpscore(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
 
 {phang}
@@ -96,13 +103,13 @@ Default value is 2.71.
 {phang}
 {opt nolin} prevents the program from testing linear terms, choosing quadratic terms from covariates specified as {help indepvars:independent variables}.
 It can be useful to speed up the algorithm if the linear part is already chosen.
-If specified, option {opt cquadratic(real)} is irrelevant.
+If specified, option {opt clinear} is irrelevant.
 This option may not be combined with {opt noquad}.
 
 {phang}
 {opt noquad} prevents the program from testing quadratic terms, ending when all linear terms have been added.
 It can be useful to speed up the algorithm if the quadratic part is not desired.
-If specified, option {opt cquadratic(real)} is irrelevant.
+If specified, option {opt cquadratic} is irrelevant.
 This option may not be combined with {opt nolin}.
 
 {title:Examples}
