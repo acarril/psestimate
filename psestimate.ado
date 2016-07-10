@@ -8,6 +8,7 @@ syntax varlist(min=1) [if] [in] [, ///
 	CQuadratic(real 2.71) ///
 	GENPShat(name) ///
 	GENLor(name) ///
+	noLin ///
 	noQuad ///
 	]
 
@@ -41,46 +42,49 @@ local C_qua			`cquadratic'
 local h `K_b' `K_l' `K_q' // generic vector of functions
 local llrt_max = `C_lin' // set equal to linear threshold to start while loop
 
-*-------------------------------------------------------------------------------
-* Select first order covariates (steps 1-5)
-*-------------------------------------------------------------------------------
 * Estimate base model:
 qui logit `treatvar' `h' if `touse'
 estimates store null
 
-* Indicate progress of first order covaraites loop:
-local N_foc : list sizeof totry
-nois _dots 0, reps(`N_foc') title(Selecting first order covariates...)
-local rep 1
+*-------------------------------------------------------------------------------
+* Select first order covariates (steps 1-5)
+*-------------------------------------------------------------------------------
 
-while `llrt_max' >= `C_lin' {
-	local llrt_max = `C_lin'
-	foreach v of varlist `totry' {
-		capture quietly logit `treatvar' `h' `v' if `touse'
-		if _rc == 0 {
-			estimates store `v'
-			qui lrtest null `v', force
-			if (`r(chi2)' >= `llrt_max') {
-				local v_max `v' // store covariate with max llrt stats
-				local llrt_max = `r(chi2)' // update maximum llrt stat
+if "`lin'" != "nolin" { 
+	* Indicate progress of first order covaraites loop:
+	local N_foc : list sizeof totry
+	nois _dots 0, reps(`N_foc') title(Selecting first order covariates...)
+	local rep 1
+	
+	while `llrt_max' >= `C_lin' {
+		local llrt_max = `C_lin'
+		foreach v of varlist `totry' {
+			capture quietly logit `treatvar' `h' `v' if `touse'
+			if _rc == 0 {
+				estimates store `v'
+				qui lrtest null `v', force
+				if (`r(chi2)' >= `llrt_max') {
+					local v_max `v' // store covariate with max llrt stats
+					local llrt_max = `r(chi2)' // update maximum llrt stat
+				}
 			}
+		nois _dots `rep++' 0
 		}
-	nois _dots `rep++' 0
-	}
-	if "`v_max'" != "" {
-		qui estimates restore `v_max' // restore computed estimates for selected covariate
-		estimates clear // clear all other estimates
-		estimates store null // update null model estimates with the selected covariate
-		local K_l `K_l' `v_max'
-		local h `K_b' `K_l' `K_q'
-		local totry: list totry - v_max
-		local v_max
-		local success = -1 // update success for progress bar
-		nois _dots `rep++' `success' // update progress bar
-	}
-	else {
-		di as text _newline "Selected first order covariates are: " as result "`K_l'"
-		continue, break
+		if "`v_max'" != "" {
+			qui estimates restore `v_max' // restore computed estimates for selected covariate
+			estimates clear // clear all other estimates
+			estimates store null // update null model estimates with the selected covariate
+			local K_l `K_l' `v_max'
+			local h `K_b' `K_l' `K_q'
+			local totry: list totry - v_max
+			local v_max
+			local success = -1 // update success for progress bar
+			nois _dots `rep++' `success' // update progress bar
+		}
+		else {
+			di as text _newline "Selected first order covariates are: " as result "`K_l'"
+			continue, break
+		}
 	}
 }
 
