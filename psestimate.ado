@@ -6,7 +6,7 @@ syntax varlist(min=1) [if] [in] [, ///
 	Totry(varlist) ///
 	CLinear(real 1) ///
 	CQuadratic(real 2.71) ///
-	ITERate(int -1)
+	ITERate(passthru) ///
 	GENPShat(name) ///
 	GENLor(name) ///
 	noLin ///
@@ -49,7 +49,7 @@ local h `K_b' `K_l' `K_q' // generic vector of functions
 local llrt_max = `C_lin' // set equal to linear threshold to start while loop
 
 * Estimate base model:
-qui logit `treatvar' `h' if `touse'
+qui logit `treatvar' `h' if `touse', `iterate'
 estimates store null
 
 *-------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ if "`lin'" != "nolin" {
 	while `llrt_max' >= `C_lin' {
 		local llrt_max = `C_lin'
 		foreach v of varlist `totry' {
-			capture quietly logit `treatvar' `h' `v' if `touse'
+			capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 			if _rc == 0 {
 				estimates store `v'
 				qui lrtest null `v', force
@@ -135,8 +135,12 @@ if "`quad'" != "noquad" {
 
 	local quadvars `totry' // preserve list of all quadratic terms to try
 
-	* Select second order terms
-	*-------------------------------------------------------------------------------
+* Select second order terms
+*-------------------------------------------------------------------------------
+	* Estimate base model again:
+	qui logit `treatvar' `h' if `touse', `iterate'
+	estimates store null
+	
 	* Indicate progress of first order covaraites loop:
 	local N_foc : list sizeof totry
 	nois _dots 0, reps(`N_foc') title(Selecting second order covariates...)
@@ -146,7 +150,7 @@ if "`quad'" != "noquad" {
 	while `llrt_max' >= `C_qua' {
 		local llrt_max = `C_qua'
 		foreach v of varlist `totry' {
-			capture quietly logit `treatvar' `h' `v' if `touse'
+			capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 			if _rc == 0 {
 				estimates store `v'
 				qui lrtest null `v', force
