@@ -16,6 +16,7 @@
 {opth t:otry(varlist)}
 {opt cl:inear(real)}
 {opt cq:uadratic(real)}
+{opt iter:ate(integer)}
 {opth genps:core(newvar)}
 {opth genl:or(newvar)}
 {opt nol:in}
