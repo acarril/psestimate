@@ -88,6 +88,7 @@ if "`lin'" != "nolin" {
 		}
 		else {
 			di as text _newline "Selected first order covariates are: " as result "`K_l'"
+			estimates drop _all
 			continue, break
 		}
 	}
@@ -177,6 +178,7 @@ if "`quad'" != "noquad" {
 }
 * Show final model
 di as text "Final model is: " as result "`h'"
+
 * Save return results
 return local h `h'
 return local K_q `K_q'
@@ -185,6 +187,7 @@ return local K_b `K_b'
 return local tvar `treatvar'
 return scalar C_q = `C_qua'
 return scalar C_l = `C_lin'
+
 * Estimate final model to save eresults
 qui logit `treatvar' `h' if `touse'
 * Generate PS hat and generate log odds ratio
