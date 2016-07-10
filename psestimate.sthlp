@@ -18,6 +18,7 @@
 {opt cq:uadratic(real)}
 {opth genps:core(newvar)}
 {opth genl:or(newvar)}
+{opt nol:in}
 {opt noq:uad}
 ]
 {p_end}
@@ -31,6 +32,7 @@
 {synopt:{opt cq:uadratic(real)}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
 {synopt:{opth genps:core(newvar)}} generate new variable with propensity score estimation{p_end}
 {synopt:{opth genl:or(newvar)}} generate new variable with log odds ratio{p_end}
+{synopt:{opt nol:in}} prevent algorithm of testing linear terms{p_end}
 {synopt:{opt noq:uad}} prevent algorithm of testing quadratic terms{p_end}
 
 {p 4 6 2}
@@ -91,9 +93,16 @@ Default value is 2.71.
 {opth genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
 
 {phang}
-{opt noquad} prevents that the algorithm tests quadratic terms, ending when all linear terms have been added.
-It can be useful to speed up the algorithm.
+{opt nolin} prevents the program from testing linear terms, choosing quadratic terms from covariates specified as {help indepvars:independent variables}.
+It can be useful to speed up the algorithm if the linear part is already chosen.
 If specified, option {opt cquadratic(real)} is irrelevant.
+This option may not be combined with {opt noquad}.
+
+{phang}
+{opt noquad} prevents the program from testing quadratic terms, ending when all linear terms have been added.
+It can be useful to speed up the algorithm if the quadratic part is not desired.
+If specified, option {opt cquadratic(real)} is irrelevant.
+This option may not be combined with {opt nolin}.
 
 {title:Examples}
 
@@ -155,7 +164,8 @@ acarril@fen.uchile.cl
 
 {pstd}
 This program started as a refinement of Juan Ignacio Elorrieta's work for Bustos, Pomeranz and Zucman (forthcoming).
-Juan Ignacio's code provided a significant headstart, while comments from Dina Pomeranz and Sebastián Bustos helped to fine tune the program. All remaining errors are my own.
+Juan Ignacio's code provided a significant headstart, while comments from Dina Pomeranz and Sebastian Bustos helped to fine tune the program.
+All remaining errors are my own.
 
 {title:References}
 
