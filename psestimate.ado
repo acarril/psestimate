@@ -62,6 +62,7 @@ if "`lin'" != "nolin" {
 	nois _dots 0, reps(`N_foc') title(Selecting first order covariates...)
 	local rep 1
 	
+	* Start first order covariates loop
 	while `llrt_max' >= `C_lin' {
 		local llrt_max = `C_lin'
 		foreach v of varlist `totry' {
@@ -141,11 +142,12 @@ if "`quad'" != "noquad" {
 	qui logit `treatvar' `h' if `touse', `iterate'
 	estimates store null
 	
-	* Indicate progress of first order covaraites loop:
+	* Indicate progress of second order covaraites loop:
 	local N_foc : list sizeof totry
 	nois _dots 0, reps(`N_foc') title(Selecting second order covariates...)
 	local rep 1
-
+	
+	* Start second order covariates loop
 	local llrt_max = `C_qua'
 	while `llrt_max' >= `C_qua' {
 		local llrt_max = `C_qua'
