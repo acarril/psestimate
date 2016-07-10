@@ -21,6 +21,11 @@ foreach g in `genpshat' `genlor' {
 	if "`g'" != "" confirm new var `g'
 }
 
+if ("`lin'" == "nolin" & "`quad'" == "noquad") {
+	display as error "options nolin and noquad may not be combined"
+	exit 198
+}
+
 * Extract treatment variable and base covariates from varlist
 local treatvar :	word 1 of `varlist'
 local K_b :			list varlist - treatvar
