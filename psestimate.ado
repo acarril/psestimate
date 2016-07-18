@@ -65,17 +65,19 @@ if "`lin'" != "nolin" {
 	* Start first order covariates loop
 	while `llrt_max' >= `C_lin' {
 		local llrt_max = `C_lin'
-		foreach v of varlist `totry' {
-			capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
-			if _rc == 0 {
-				estimates store `v'
-				qui lrtest null `v', force
-				if (`r(chi2)' >= `llrt_max') {
-					local v_max `v' // store covariate with max llrt stats
-					local llrt_max = `r(chi2)' // update maximum llrt stat
+		if !missing("`totry'") {
+			foreach v of varlist `totry' {
+				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
+				if _rc == 0 {
+					estimates store `v'
+					qui lrtest null `v', force
+					if (`r(chi2)' >= `llrt_max') {
+						local v_max `v' // store covariate with max llrt stats
+						local llrt_max = `r(chi2)' // update maximum llrt stat
+					}
 				}
+			nois _dots `rep++' 0
 			}
-		nois _dots `rep++' 0
 		}
 		if "`v_max'" != "" {
 			qui estimates restore `v_max' // restore computed estimates for selected covariate
@@ -105,17 +107,15 @@ if "`quad'" != "noquad" {
 	local num_h : word count `h'
 	local totry // clear totry varlist
 	forval i = 1/`num_h' {
-	  forval j = 1/`=`i'-1' {
-		local x : word `i' of `h'
-		local y : word `j' of `h'
-		qui generate `x'X`y' = `x' * `y' if `touse'
-		local labx : variable label `x'
-		local laby : variable label `y'
-		if (!missing("`labx'") & !missing("`laby'")) label var `x'X`y' `"`labx' X `laby'"'
-		local totry `totry' `x'X`y'
-	  }
+		forval j = 1/`=`i'-1' {
+			local x : word `i' of `h'
+			local y : word `j' of `h'
+			local totry `totry' c.`x'#c.`y'
+		}
 	}
 
+di "TOTRY: `totry'"
+	
 * Generate quadratic varaibles from linear model
 *-------------------------------------------------------------------------------
 
@@ -151,33 +151,35 @@ if "`quad'" != "noquad" {
 	local llrt_max = `C_qua'
 	while `llrt_max' >= `C_qua' {
 		local llrt_max = `C_qua'
-		foreach v of varlist `totry' {
-			capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
-			if _rc == 0 {
-				estimates store `v'
-				qui lrtest null `v', force
-				if (`r(chi2)' >= `llrt_max') {
-					local v_max `v' // store covariate with max llrt stats
-					local llrt_max = `r(chi2)' // update maximum llrt stat
+		if !missing("`totry'") {
+			foreach v in `totry' {
+				local estrep = `rep'+1
+				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
+				if _rc == 0 {
+					estimates store est`estrep'
+					qui lrtest null est`estrep', force
+					if (`r(chi2)' >= `llrt_max') {
+						local v_max `v' // store covariate with max llrt stats
+						local llrt_max = `r(chi2)' // update maximum llrt stat
+					}
 				}
+			nois _dots `rep++' 0
 			}
-		nois _dots `rep++' 0
 		}
 		if "`v_max'" != "" {
-			qui estimates restore `v_max' // restore computed estimates for selected covariate
+			qui estimates restore est`estrep' // restore computed estimates for selected covariate
 			estimates clear // clear all other estimates
 			estimates store null // update null model estimates with the selected covariate
 			local K_q `K_q' `v_max'
 			local h `K_b' `K_l' `K_q'
 			local totry: list totry - v_max
 			local v_max
+			local estrep
 			local success = -1 // update success for progress bar
 			nois _dots `rep++' `success' // update progress bar
 		}
 		else {
 			di as text _newline "Selected second order covariates are: " as result "`K_q'"
-			local droplist: list quadvars - K_q
-			drop `droplist'
 			estimates drop _all
 			continue, break
 		}
