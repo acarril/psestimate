@@ -120,8 +120,6 @@ if "`quad'" != "noquad" {
 			local totry `totry' c.`x'#c.`y'
 		}
 	}
-
-di "TOTRY: `totry'"
 	
 * Generate quadratic varaibles from linear model
 *-------------------------------------------------------------------------------
@@ -133,12 +131,10 @@ di "TOTRY: `totry'"
 		capture assert missing(`v') | inlist(`v', 0, 1)
 		if _rc != 0 local nondummy `nondummy' `v'
 	}
-
+	
+	* Add quadratic terms of non-dummies
 	foreach z of local nondummy {
-		qui gen `z'_2 = `z'^2
-		local labz : variable label `z'
-		if !missing("`labz'") label var `z'_2 `"`labz' squared"'
-		local totry `totry' `z'_2
+		local totry `totry' c.`z'#c.`z'
 	}
 
 	local quadvars `totry' // preserve list of all quadratic terms to try
@@ -161,7 +157,7 @@ di "TOTRY: `totry'"
 		local llrt_max = `C_qua'
 		if !missing("`totry'") {
 			foreach v in `totry' {
-				local estrep = `rep'+1
+				local estrep = `estrep'+1
 				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 				if _rc == 0 {
 					estimates store est`estrep'
@@ -182,13 +178,13 @@ di "TOTRY: `totry'"
 		}
 		if "`v_max'" != "" {
 			qui estimates restore est`estrep' // restore computed estimates for selected covariate
+			local estrep 0
 			estimates clear // clear all other estimates
 			estimates store null // update null model estimates with the selected covariate
 			local K_q `K_q' `v_max'
 			local h `K_b' `K_l' `K_q'
 			local totry: list totry - v_max
 			local v_max
-			local estrep
 		}
 		else {
 			di as text _newline "Selected second order covariates are: " as result "`K_q'"
