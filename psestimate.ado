@@ -4,7 +4,7 @@ program define psestimate, rclass
 	
 syntax varlist(min=1) [if] [in] [, ///
 	Totry(varlist) ///
-	NOTtry(varlist) ///
+	NOTry(varlist) ///
 	CLinear(real 1) ///
 	CQuadratic(real 2.71) ///
 	ITERate(passthru) ///
@@ -38,7 +38,7 @@ if missing("`totry'") {
 	local totry `r(varlist)'
 }
 local totry :	list totry - varlist
-local totry :	list totry - nottry
+local totry :	list totry - notry
 
 * Thresholds:
 local C_lin			`clinear'
