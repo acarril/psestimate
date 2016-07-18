@@ -78,7 +78,13 @@ if "`lin'" != "nolin" {
 						local llrt_max = `r(chi2)' // update maximum llrt stat
 					}
 				}
-			nois _dots `rep++' 0
+				local N_soc : list sizeof totry
+				if `estrep' != `N_soc' {
+					nois _dots `rep++' 0
+				}
+				else {
+					nois _dots `rep++' -1
+				}
 			}
 		}
 		if "`v_max'" != "" {
@@ -89,8 +95,6 @@ if "`lin'" != "nolin" {
 			local h `K_b' `K_l' `K_q'
 			local totry: list totry - v_max
 			local v_max
-			local success = -1 // update success for progress bar
-			nois _dots `rep++' `success' // update progress bar
 		}
 		else {
 			di as text _newline "Selected first order covariates are: " as result "`K_l'"
@@ -165,7 +169,13 @@ di "TOTRY: `totry'"
 						local llrt_max = `r(chi2)' // update maximum llrt stat
 					}
 				}
-			nois _dots `rep++' 0
+				local N_soc : list sizeof totry
+				if `estrep' != `N_soc' {
+					nois _dots `rep++' 0
+				}
+				else {
+					nois _dots `rep++' -1
+				}
 			}
 		}
 		if "`v_max'" != "" {
@@ -177,8 +187,6 @@ di "TOTRY: `totry'"
 			local totry: list totry - v_max
 			local v_max
 			local estrep
-			local success = -1 // update success for progress bar
-			nois _dots `rep++' `success' // update progress bar
 		}
 		else {
 			di as text _newline "Selected second order covariates are: " as result "`K_q'"
