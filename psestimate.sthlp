@@ -11,18 +11,8 @@
 {title:Syntax}
 
 {p 8 16 2}
-{cmd:psestimate} {depvar} [{indepvars}] [{help if}] [{help in}]
-[,
-{opth t:otry(varlist)}
-{opth not:ry(varlist)}
-{opt cl:inear(real)}
-{opt cq:uadratic(real)}
-{opt iter:ate(integer)}
-{opth genps:core(newvar)}
-{opth genl:or(newvar)}
-{opt nol:in}
-{opt noq:uad}
-]
+{cmd:psestimate} {depvar} [{indepvars}] {ifin}
+[{cmd:,} {it:options}]
 {p_end}
 
 {synoptset 20 tabbed}{...}
