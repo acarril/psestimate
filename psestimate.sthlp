@@ -14,6 +14,7 @@
 {cmd:psestimate} {depvar} [{indepvars}] [{help if}] [{help in}]
 [,
 {opth t:otry(varlist)}
+{opth not:ry(varlist)}
 {opt cl:inear(real)}
 {opt cq:uadratic(real)}
 {opt iter:ate(integer)}
@@ -29,6 +30,7 @@
 {synoptline}
 {synoptset 20 tabbed}{...}
 {synopt:{opth t:otry(varlist)}} specify list of covariates to try; default is all{p_end}
+{synopt:{opth not:ry(varlist)}} specify list of covariates to exclude; default is none{p_end}
 {synopt:{opt cl:inear(real)}} threshold value for likelihood ratio test of first order covariates; default is 1{p_end}
 {synopt:{opt cq:uadratic(real)}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
 {synopt:{opt iter:ate(#)}} perform maximum of # iterations in each logit; default is 16000{p_end}
@@ -55,6 +57,7 @@ All specifications are fitted with a {manhelp logit R:logit} model by maximum li
 {pstd}
 The algorithm selects first order terms from all remaining variables of the dataset (i.e. excluding variables of the base model),
 unless a subset of variables is specified with the {opth totry(varlist)} option.
+Specific variables may be excluded using the {opth notry(varlist)} option.
 
 {pstd}
 The selection of first order terms is performed in a stepwise fashion, comparing the base (nested) model to a model with one single additional covariate.
@@ -75,6 +78,9 @@ This second process of selecting and including additional quadratic terms is car
 {phang}
 {opth totry(varlist)} specifies the vector of covariates from which the first and second order terms are going to be selected.
 The default is to include all variables in the dataset, exluding the {depvar} and other base model covariates indicated in {indepvars} (if any).
+
+{phang}
+{opth notry(varlist)} specifies a vector of covariates to be excluded from the selection of terms.
 
 {phang}
 {opt clinear(real)} specifies the threshold value used for the addition of first order (linear) terms.
@@ -171,8 +177,8 @@ acarril@fen.uchile.cl
 {title:Acknowledgements}
 
 {pstd}
-This program started as a refinement of Juan Ignacio Elorrieta's work for Bustos, Pomeranz and Zucman (forthcoming).
-Juan Ignacio's code provided a significant headstart, while comments from Dina Pomeranz and Sebastian Bustos helped to fine tune the program.
+This program started as a refinement of Juan Ignacio Elorrieta's work, whose code provided a significant headstart.
+I'm also indebted to Diego Escobar, who helped me to fine tune several features and to squash some bugs.
 All remaining errors are my own.
 
 {title:References}
