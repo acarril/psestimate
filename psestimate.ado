@@ -37,7 +37,8 @@ if missing("`totry'") {
 	qui ds
 	local totry `r(varlist)'
 }
-local totry :		list totry - varlist
+local totry :	list totry - varlist
+local totry :	list totry - nottry
 
 * Thresholds:
 local C_lin			`clinear'
