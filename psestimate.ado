@@ -61,6 +61,7 @@ estimates store null
 if "`lin'" != "nolin" { 
 	* Indicate progress of first order covaraites loop:
 	local N_foc : list sizeof totry
+	local N_foc = `N_foc'*(`N_foc'+1)/2
 	nois _dots 0, reps(`N_foc') title(Selecting first order covariates...)
 	local rep 1
 	
@@ -150,6 +151,7 @@ di "TOTRY: `totry'"
 	
 	* Indicate progress of second order covaraites loop:
 	local N_soc : list sizeof totry
+	local N_soc = `N_soc'*(`N_soc'+1)/2
 	nois _dots 0, reps(`N_soc') title(Selecting second order covariates...)
 	local rep 1
 	
