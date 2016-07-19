@@ -12,7 +12,7 @@ syntax varlist(min=1) [if] [in] [, ///
 	GENLor(name) ///
 	noLin ///
 	noQuad ///
-	]
+	]	
 
 marksample touse
 *-------------------------------------------------------------------------------
@@ -28,17 +28,22 @@ if ("`lin'" == "nolin" & "`quad'" == "noquad") {
 	exit 198
 }
 
+* Try all variables not defined in varlist
+
+if missing("`totry'") {
+	qui ds `varlist' `notry' __00*, not
+	local totry `r(varlist)'
+}
+else {
+	local totry : list totry - varlist
+	local totry : list totry - notry
+}
+
+di "totry: `totry'"
+
 * Extract treatment variable and base covariates from varlist
 local treatvar :	word 1 of `varlist'
 local K_b :			list varlist - treatvar
-
-* Try all variables not defined in varlist
-if missing("`totry'") {
-	qui ds
-	local totry `r(varlist)'
-}
-local totry :	list totry - varlist
-local totry :	list totry - notry
 
 * Thresholds:
 local C_lin			`clinear'
@@ -70,6 +75,7 @@ if "`lin'" != "nolin" {
 		local llrt_max = `C_lin'
 		if !missing("`totry'") {
 			foreach v of varlist `totry' {
+				local estrep = `estrep'+1
 				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 				if _rc == 0 {
 					estimates store `v'
@@ -225,4 +231,5 @@ else {
 		lab var `genpshat' "Propensity Score"
 	}
 }
+
 end
