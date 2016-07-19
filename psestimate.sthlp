@@ -21,13 +21,13 @@
 {synoptset 20 tabbed}{...}
 {synopt:{opth t:otry(varlist)}} specify list of covariates to try; default is all{p_end}
 {synopt:{opth not:ry(varlist)}} specify list of covariates to exclude; default is none{p_end}
+{synopt:{opt nol:in}} prevent algorithm of testing linear terms{p_end}
+{synopt:{opt noq:uad}} prevent algorithm of testing quadratic terms{p_end}
 {synopt:{opt cl:inear(real)}} threshold value for likelihood ratio test of first order covariates; default is 1{p_end}
 {synopt:{opt cq:uadratic(real)}} threshold value for likelihood ratio test of second order covariates; default is 2.71{p_end}
 {synopt:{opt iter:ate(#)}} perform maximum of # iterations in each logit; default is 16000{p_end}
 {synopt:{opth genps:core(newvar)}} generate new variable with propensity score estimation{p_end}
 {synopt:{opth genl:or(newvar)}} generate new variable with log odds ratio{p_end}
-{synopt:{opt nol:in}} prevent algorithm of testing linear terms{p_end}
-{synopt:{opt noq:uad}} prevent algorithm of testing quadratic terms{p_end}
 
 {p 4 6 2}
 
@@ -66,35 +66,11 @@ This second process of selecting and including additional quadratic terms is car
 {title:Options}
 
 {phang}
-{opth totry(varlist)} specifies the vector of covariates from which the first and second order terms are going to be selected.
+{opth totry(varlist)} specifies the vector of covariates from which the first (and potentially second) order terms are going to be selected.
 The default is to include all variables in the dataset, exluding the {depvar} and other base model covariates indicated in {indepvars} (if any).
 
 {phang}
 {opth notry(varlist)} specifies a vector of covariates to be excluded from the selection of terms.
-
-{phang}
-{opt clinear(real)} specifies the threshold value used for the addition of first order (linear) terms.
-The decision is based on the likelihood ratio test statistic for the null hypothesis that the coefficient of the additional first order term is equal to zero.
-See {manhelp lrtest R:lrtest} for additional information.
-Default value is 1.
-
-{phang}
-{opt cquadratic(real)} specifies the threshold value used for the addition of second order (quadratic) terms.
-The decision is based on the likelihood ratio test statistic for the null hypothesis that the coefficient of the additional second order term is equal to zero.
-See {manhelp lrtest R:lrtest} for additional information.
-If the {opt noquad} option is specified, then this option is irrelevant.
-Default value is 2.71.
-
-{phang}
-{opt iterate(#)} specifies the maximum number of iterations in each logit estimation.
-Default value is 1600.
-See {manhelp logit R:logit} and {manhelp maximize R:maximize} for additional information.
-
-{phang}
-{opth genpscore(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
-
-{phang}
-{opth genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
 
 {phang}
 {opt nolin} prevents the program from testing linear terms, choosing quadratic terms from covariates specified as {help indepvars:independent variables}.
@@ -107,6 +83,53 @@ This option may not be combined with {opt noquad}.
 It can be useful to speed up the algorithm if the quadratic part is not desired.
 If specified, option {opt cquadratic} is irrelevant.
 This option may not be combined with {opt nolin}.
+
+{phang}
+{opt clinear(real)} specifies the threshold value used for the addition of first order (linear) terms.
+The decision is based on the likelihood ratio test statistic for the null hypothesis that the coefficient of the additional first order term is equal to zero.
+See {manhelp lrtest R:lrtest} for additional information.
+If the {opt nolin} option is specified, then this option is irrelevant.
+Default value is 1.
+
+{phang}
+{opt cquadratic(real)} specifies the threshold value used for the addition of second order (quadratic) terms.
+The decision is based on the likelihood ratio test statistic for the null hypothesis that the coefficient of the additional second order term is equal to zero.
+See {manhelp lrtest R:lrtest} for additional information.
+If the {opt noquad} option is specified, then this option is irrelevant.
+Default value is 2.71.
+
+{phang}
+{opt iterate(#)} specifies the maximum number of iterations in each logit estimation.
+Stata's default value is 1600.
+See {manhelp logit R:logit} and {manhelp maximize R:maximize} for additional information.
+
+{phang}
+{opth genpscore(newvar)} specifies that a new variable with the estimated propensity scores is generated, named {it: newvar}.
+
+{phang}
+{opth genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
+
+
+{marker remarks}{...}
+{title:Remarks on executing time}
+
+{pstd}
+The algorithm implemented by {cmd: psestimate} may take a (very) long time executing.
+Several measures have been taken to manage this fact. Here I outline most of them.
+
+{phang}
+- A progress indicator is displayed while the program selects first and second order terms.
+The number in parenthesis corresponds to the upper bound of iterations the algorithm could perform before running out of covariates (or its combinations, if applicable) to try.
+
+{phang}
+- The selection of linear terms is usually faster than that of quadratic ones.
+It is a good idea to start using the command with the {opt noquad} option and then, when linear terms are chosen, include them explicitely in {varlist} and use {opt nolin} to skip the first part.
+
+{pstd}
+executes {it:command} multiple times, bootstrapping the statistics in
+{it:exp_list} by resampling observations (with replacement) from the data in
+memory {it:#} times.  This method is commonly referred to as the nonparametric
+bootstrap.
 
 {title:Examples}
 
