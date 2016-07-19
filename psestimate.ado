@@ -104,7 +104,10 @@ if "`lin'" != "nolin" {
 			local v_max
 		}
 		else {
-			di as text _newline "Selected first order covariates are: " as result "`K_l'"
+			if !missing("`K_l'") {
+				di as text _newline "Selected first order covariates are: " as result "`K_l'"
+			}
+			else di as text _newline "No first order covariates selected"
 			estimates drop _all
 			continue, break
 		}
@@ -193,7 +196,10 @@ if "`quad'" != "noquad" {
 			local v_max
 		}
 		else {
-			di as text _newline "Selected second order covariates are: " as result "`K_q'"
+			if !missing("`K_q'") {
+				di as text _newline "Selected second order covariates are: " as result "`K_q'"
+			}
+			else di as text _newline "No second order covariates selected"
 			estimates drop _all
 			continue, break
 		}
