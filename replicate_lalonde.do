@@ -1,6 +1,8 @@
+cd "/Users/alvaro/Library/Application Support/Stata/ado/personal/psestimate"
+*cd "C:\ado\personal\psestimate"
+
 discard
-*cd "/Users/alvaro/Library/Application Support/Stata/ado/personal/psestimate"
-cd "C:\ado\personal\psestimate"
+
 use nswre74, clear
 foreach k in 74 75 78 {
 	gen u`k' = (re`k'==0)
