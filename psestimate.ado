@@ -39,8 +39,6 @@ else {
 	local totry : list totry - notry
 }
 
-di "totry: `totry'"
-
 * Extract treatment variable and base covariates from varlist
 local treatvar :	word 1 of `varlist'
 local K_b :			list varlist - treatvar
