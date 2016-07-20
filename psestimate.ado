@@ -83,17 +83,20 @@ if "`lin'" != "nolin" {
 						local llrt_max = `r(chi2)' // update maximum llrt stat
 					}
 				}
-				local N_soc : list sizeof totry
-				if `estrep' != `N_soc' {
+				local N_foc : list sizeof totry
+				if `estrep' != `N_foc' {
 					nois _dots `rep++' 0
 				}
 				else {
-					nois _dots `rep++' -1
+					if "`v_max'" != "" {
+						nois _dots `rep++' -1
+					}
 				}
 			}
 		}
 		if "`v_max'" != "" {
 			qui estimates restore `v_max' // restore computed estimates for selected covariate
+			local estrep 0
 			estimates clear // clear all other estimates
 			estimates store null // update null model estimates with the selected covariate
 			local K_l `K_l' `v_max'
@@ -160,6 +163,7 @@ if "`quad'" != "noquad" {
 	
 	* Start second order covariates loop
 	local llrt_max = `C_qua'
+	local estrep = 0
 	while `llrt_max' >= `C_qua' {
 		local llrt_max = `C_qua'
 		if !missing("`totry'") {
@@ -175,11 +179,13 @@ if "`quad'" != "noquad" {
 					}
 				}
 				local N_soc : list sizeof totry
-				if `estrep' != `N_soc' {
+				if `estrep' < `N_soc' {
 					nois _dots `rep++' 0
 				}
 				else {
-					nois _dots `rep++' -1
+					if "`v_max'" != "" {
+						nois _dots `rep++' -1
+					}
 				}
 			}
 		}
