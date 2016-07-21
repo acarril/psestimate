@@ -115,72 +115,12 @@ See {manhelp logit R:logit} and {manhelp maximize R:maximize} for additional inf
 
 {pstd}
 The algorithm implemented by {cmd: psestimate} may take a (very) long time executing.
-Several measures have been taken to manage this fact. Here I outline most of them.
-
-{phang}
-- A progress indicator is displayed while the program selects first and second order terms.
+A progress indicator is displayed while the program selects first and second order terms, to monitor progress.
 The number in parenthesis corresponds to the upper bound of iterations the algorithm could perform before running out of covariates (or its combinations, if applicable) to try.
 
-{phang}
-- The selection of linear terms is usually faster than that of quadratic ones.
+{pstd}
+The selection of linear terms is usually faster than that of quadratic ones.
 It is a good idea to start using the command with the {opt noquad} option and then, when linear terms are chosen, include them explicitely in {varlist} and use {opt nolin} to skip the first part.
-
-{pstd}
-executes {it:command} multiple times, bootstrapping the statistics in
-{it:exp_list} by resampling observations (with replacement) from the data in
-memory {it:#} times.  This method is commonly referred to as the nonparametric
-bootstrap.
-
-{marker remarks}{...}
-{title:Remarks}
-
-{pstd}
-The algorithm carried out by {cmd: psestimate} can take a long time to complete, depending on several factors.
-A progress indicator is displayed while both the linear and quadratic selection of terms is being carried out.
-The number in parenthesis indicates the upper bound of iterations to be performed and is equal to ...
-
-{phang2}
-n = n
-
-{pstd}
-executes {it:command} multiple times, bootstrapping the statistics in
-{it:exp_list} by resampling observations (with replacement) from the data in
-memory {it:#} times.  This method is commonly referred to as the nonparametric
-bootstrap.
-
-{pstd}
-{it:command} defines the statistical command to be executed.
-Most Stata commands and user-written programs can be used with
-{cmd:bootstrap}, as long as they follow standard Stata syntax;
-see {helpb language:[U] 11 Language syntax}.
-If the {opt bca} option is supplied,
-{it:command} must also work with {cmd:jackknife}; see
-{manhelp jackknife R}.  The {cmd:by} prefix may not be part of {it:command}.
-
-{pstd}
-{it:{help exp_list}} specifies the statistics to be collected from the
-execution of {it:command}.  If {it:command} changes the contents in
-{cmd:e(b)}, {it:exp_list} is optional and defaults to {cmd:_b}.
-
-{pstd}
-Because bootstrapping is a random process, if you want to be able to
-reproduce results, set the random-number seed by specifying
-the {opt seed(#)} option or by typing
-
-{phang2}
-{cmd:. set seed} {it:#}
-
-{pstd}
-where {it:#} is a seed of your choosing, before running {cmd:bootstrap}; see
-{manhelp set_seed R:set seed}.
-
-{pstd}
-Many estimation commands allow the {cmd:vce(bootstrap)} option.  For those
-commands, we recommend using {cmd:vce(bootstrap)} over {cmd:bootstrap} because 
-the estimation command already handles clustering and other model-specific
-details for you.  The {cmd:bootstrap} prefix command is intended for use with
-nonestimation commands, such as {cmd:summarize}, user-written commands, or
-functions of coefficients.
 
 {title:Examples}
 
