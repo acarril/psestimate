@@ -1,4 +1,4 @@
-*! 1.2 Alvaro Carril 18jul2016
+*! 1.3 Alvaro Carril 18jul2016
 program define psestimate, rclass
 	version 11
 	
