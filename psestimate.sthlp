@@ -128,6 +128,12 @@ It is a good idea to start using the command with the {opt noquad} option and th
 For these examples I use the "Lalonde Experimental Data (Dehejia-Wahba Sample)", corresponding to the data analyzed by {help psestimate##DW_1999:Dehejia and Wahba (1999)} and available on Dehejia's website.
 The dataset contains 445 observations with information on treatment status and various other characteristics.
 
+{pstd}
+To install the ancillary files (nswre74.dta and replicate_lalonde.do), remember to use {cmd: net gate} after {cmd: ssc install}:
+
+{phang2}{cmd:. ssc install psestimate}{p_end}
+{phang2}{cmd:. net get psestimate}{p_end}
+
 {pstd}Setup{p_end}
 {phang2}{cmd:. use nswre74}{p_end}
 
