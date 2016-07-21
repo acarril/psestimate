@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.2 Jul 2016}{...}
+{* *! version 1.3 Jul 2016}{...}
 {cmd:help psestimate}{...}
 {hline}
 
