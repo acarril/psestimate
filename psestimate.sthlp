@@ -144,16 +144,16 @@ To install the ancillary files (nswre74.dta and replicate_lalonde.do), remember 
 {phang2}{cmd:. psestimate treat, totry(age-nodeg re*) cquad(.8)}{p_end}
 
 {pstd}Select PS model with income and unemployment dummies as basic covariates{p_end}
-{phang2}{cmd:. foreach k in 74 75 78 {c -(}} {p_end}
-{phang2}{cmd:.	gen u`k' = (re`k'==0)}{p_end}
+{phang2}{cmd:. foreach y in 74 75 78 {c -(}} {p_end}
+{phang2}{cmd:.	gen u`y' = (re`y'==0)}{p_end}
 {phang2}{cmd:. }}{p_end}
 {phang2}{cmd:. psestimate treat re* u*}{p_end}
 
-{pstd}Estimate PS with no quadratic terms{p_end}
+{pstd}Estimate propensity score with no quadratic terms{p_end}
 {phang2}{cmd:. psestimate treat, genpscore(ps) noquad}{p_end}
 
-{pstd}Estimate log odds ratio {p_end}
-{phang2}{cmd:. psestimate treat, genlor(logodds)}{p_end}
+{pstd}Estimate log odds ratio with explicit selection of linear terms{p_end}
+{phang2}{cmd:. psestimate treat age-nodeg, nolin genlor(logodds)}{p_end}
 
 {title:Stored results}
 
