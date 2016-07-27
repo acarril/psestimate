@@ -8,7 +8,7 @@ syntax varlist(min=1) [if] [in] [, ///
 	CLinear(real 1) ///
 	CQuadratic(real 2.71) ///
 	ITERate(passthru) ///
-	GENPShat(name) ///
+	GENPScore(name) ///
 	GENLor(name) ///
 	noLin ///
 	noQuad ///
@@ -19,7 +19,7 @@ marksample touse
 * Inputs
 *-------------------------------------------------------------------------------
 * Checks:
-foreach g in `genpshat' `genlor' {
+foreach g in `genpscore' `genlor' {
 	if "`g'" != "" confirm new var `g'
 }
 
@@ -224,21 +224,21 @@ return scalar C_l = `C_lin'
 * Estimate final model to save eresults
 qui logit `treatvar' `h' if `touse'
 * Generate PS hat and generate log odds ratio
-tempvar `genpshat' `genlor' ps
+tempvar `genpscore' `genlor' ps
 qui predict `ps' if e(sample) == 1, pr
 if "`genlor'" != "" {
 	qui gen `genlor' = ln(`ps'/(1-`ps')) if `touse'
 	lab var `genlor' "Log odds ratio"
-	if "`genpshat'" != "" {
-		qui rename `ps' `genpshat'
-		lab var `genpshat' "Propensity score"
-		order `genpshat' `genlor', last
+	if "`genpscore'" != "" {
+		qui rename `ps' `genpscore'
+		lab var `genpscore' "Propensity score"
+		order `genpscore' `genlor', last
 	}
 }
 else {
 	if "`genpshat'" != "" {
-		qui rename `ps' `genpshat'
-		lab var `genpshat' "Propensity Score"
+		qui rename `ps' `genpscore'
+		lab var `genpscore' "Propensity Score"
 	}
 }
 
