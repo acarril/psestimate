@@ -14,6 +14,8 @@ syntax varlist(min=1) [if] [in] [, ///
 	noQuad ///
 	]	
 
+* cualquier cosa	
+	
 marksample touse
 *-------------------------------------------------------------------------------
 * Inputs
