@@ -1,4 +1,4 @@
-*! 1.3 Alvaro Carril 17nov2016
+*! 1.4 Alvaro Carril 17nov2016
 program define psestimate, rclass
 	version 11
 	
@@ -81,6 +81,10 @@ if "`lin'" != "nolin" {
 					if (`r(chi2)' >= `llrt_max') {
 						local v_max `v' // store covariate with max llrt stats
 						local llrt_max = `r(chi2)' // update maximum llrt stat
+						capture estimates drop v_max
+						qui estimates restore `v'
+						estimates store v_max
+						estimates drop `v'
 					}
 				}
 				local N_foc : list sizeof totry
@@ -95,14 +99,14 @@ if "`lin'" != "nolin" {
 			}
 		}
 		if "`v_max'" != "" {
-			qui estimates restore `v_max' // restore computed estimates for selected covariate
-			local estrep 0
+			qui estimates restore v_max // restore computed estimates for selected covariate
 			estimates clear // clear all other estimates
 			estimates store null // update null model estimates with the selected covariate
 			local K_l `K_l' `v_max'
 			local h `K_b' `K_l' `K_q'
 			local totry: list totry - v_max
 			local v_max
+			local estrep 0
 		}
 		else {
 			if !missing("`K_l'") {
@@ -176,6 +180,10 @@ if "`quad'" != "noquad" {
 					if (`r(chi2)' >= `llrt_max') {
 						local v_max `v' // store covariate with max llrt stats
 						local llrt_max = `r(chi2)' // update maximum llrt stat
+						capture estimates drop v_max
+						qui estimates restore est`estrep'
+						estimates store v_max
+						estimates drop est`estrep'
 					}
 				}
 				local N_soc : list sizeof totry
@@ -190,14 +198,14 @@ if "`quad'" != "noquad" {
 			}
 		}
 		if "`v_max'" != "" {
-			qui estimates restore est`estrep' // restore computed estimates for selected covariate
-			local estrep 0
+			qui estimates restore v_max // restore computed estimates for selected covariate
 			estimates clear // clear all other estimates
 			estimates store null // update null model estimates with the selected covariate
 			local K_q `K_q' `v_max'
 			local h `K_b' `K_l' `K_q'
 			local totry: list totry - v_max
 			local v_max
+			local estrep 0
 		}
 		else {
 			if !missing("`K_q'") {

@@ -23,4 +23,4 @@ drop *78
 * PSM algorithm
 ********************************************************************************
 
-psestimate treat
+psestimate treat re* u*
