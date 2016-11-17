@@ -1,4 +1,4 @@
-*! 1.3 Alvaro Carril 18jul2016
+*! 1.3 Alvaro Carril 17nov2016
 program define psestimate, rclass
 	version 11
 	
@@ -12,11 +12,10 @@ syntax varlist(min=1) [if] [in] [, ///
 	GENLor(name) ///
 	noLin ///
 	noQuad ///
-	]	
-
-* cualquier cosa	
+	]
 	
 marksample touse
+
 *-------------------------------------------------------------------------------
 * Inputs
 *-------------------------------------------------------------------------------
@@ -31,7 +30,6 @@ if ("`lin'" == "nolin" & "`quad'" == "noquad") {
 }
 
 * Try all variables not defined in varlist
-
 if missing("`totry'") {
 	qui ds `varlist' `notry' __00*, not
 	local totry `r(varlist)'
