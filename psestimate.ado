@@ -3,7 +3,7 @@ program define psestimate, rclass
 	version 11
 	
 syntax varlist(min=1 fv) [if] [in] [, ///
-	Totry(varlist) ///
+	Totry(varlist fv) ///
 	NOTry(varlist) ///
 	CLinear(real 1) ///
 	CQuadratic(real 2.71) ///
@@ -81,7 +81,7 @@ if "`lin'" != "nolin" {
 	while `llrt_max' >= `C_lin' {
 		local llrt_max = `C_lin'
 		if !missing("`totry'") {
-			foreach v of varlist `totry' {
+			foreach v of local totry {
 				local estrep = `estrep'+1
 				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 				if _rc == 0 {
