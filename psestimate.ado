@@ -22,6 +22,8 @@ marksample touse
 * Factor variables:
 local fvops = "`s(fvops)'" == "true" | _caller() >= 11
 if `fvops' {
+	gettoken lhs rest : varlist // extract depvar
+	_fv_check_depvar `lhs' // check depvar is not a factor variable
 	fvexpand `varlist' if `touse' // expand factor variables
 	local varlist `r(varlist)' // replace varlist with expanded factor variables
 }
