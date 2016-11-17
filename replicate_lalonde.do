@@ -23,4 +23,4 @@ drop *78
 * PSM algorithm
 ********************************************************************************
 
-psestimate treat re* u*
+psestimate treat i1.black i.hisp, totry(age - married) noquad

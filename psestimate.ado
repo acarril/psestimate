@@ -2,7 +2,7 @@
 program define psestimate, rclass
 	version 11
 	
-syntax varlist(min=1) [if] [in] [, ///
+syntax varlist(min=1 fv) [if] [in] [, ///
 	Totry(varlist) ///
 	NOTry(varlist) ///
 	CLinear(real 1) ///
@@ -19,6 +19,13 @@ marksample touse
 *-------------------------------------------------------------------------------
 * Inputs
 *-------------------------------------------------------------------------------
+* Factor variables:
+local fvops = "`s(fvops)'" == "true" | _caller() >= 11
+if `fvops' {
+	fvexpand `varlist' if `touse' // expand factor variables
+	local varlist `r(varlist)' // replace varlist with expanded factor variables
+}
+
 * Checks:
 foreach g in `genpscore' `genlor' {
 	if "`g'" != "" confirm new var `g'
