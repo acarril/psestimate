@@ -36,15 +36,16 @@ if ("`lin'" == "nolin" & "`quad'" == "noquad") {
 	exit 198
 }
 
-* Try all variables not defined in varlist
+* Define totry list
 if missing("`totry'") {
-	qui ds `varlist' `notry' __00*, not
-	local totry `r(varlist)'
+	unab totry: _all
+	unab temp: __00* 
+	local totry: list totry - temp
 }
-else {
-	local totry : list totry - varlist
-	local totry : list totry - notry
-}
+fvrevar `varlist', list
+local varlist_unop `r(varlist)'
+local totry : list totry - varlist_unop
+local totry : list totry - notry
 
 * Extract treatment variable and base covariates from varlist
 local treatvar :	word 1 of `varlist'
@@ -169,8 +170,6 @@ if "`quad'" != "noquad" {
 		}
 	}
 	
-	di "totry: `totry'"
-	
 * Generate quadratic terms from linear model
 *-------------------------------------------------------------------------------
 	
@@ -178,7 +177,6 @@ if "`quad'" != "noquad" {
 	foreach v of local h_fv {
 		local totry `totry' `v'#`v'
 	}
-	di "totry: `totry'"
 	local quadvars `totry' // preserve list of all quadratic terms to try
 
 * Select second order terms
