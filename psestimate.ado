@@ -132,17 +132,34 @@ if "`lin'" != "nolin" {
 * Select second order covariates (steps 6-10)
 *-------------------------------------------------------------------------------
 if "`quad'" != "noquad" { 
+
+* Separate lists of vars and fvvars
+*-------------------------------------------------------------------------------
+	foreach v in `h' {
+		capture _fv_check_depvar `v'
+		if _rc {
+			local h_cat `h_cat' `v'
+			local h_fv `h_fv' `v'
+		}
+		else {
+			local h_nocat `h_nocat' c.`v'
+			local h_fv `h_fv' c.`v'
+		}
+	}
+
 * Generate interactive variables from linear model
 *-------------------------------------------------------------------------------
-	local num_h : word count `h'
+	local num_h : word count `h_fv'
 	local totry // clear totry varlist
 	forval i = 1/`num_h' {
 		forval j = 1/`=`i'-1' {
-			local x : word `i' of `h'
-			local y : word `j' of `h'
-			local totry `totry' c.`x'#c.`y'
+			local x : word `i' of `h_fv'
+			local y : word `j' of `h_fv'
+			local totry `totry' `x'#`y'
 		}
 	}
+	
+	di "totry:  `totry'"
 	
 * Generate quadratic varaibles from linear model
 *-------------------------------------------------------------------------------
