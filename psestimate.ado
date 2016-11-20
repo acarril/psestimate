@@ -131,6 +131,17 @@ if "`lin'" != "nolin" {
 *-------------------------------------------------------------------------------
 if "`quad'" != "noquad" { 
 
+* Collect dummies to avoid interacting them
+*-------------------------------------------------------------------------------
+
+	* Collect dummies
+	qui ds `h', has(type numeric)
+	local h_numeric `r(varlist)'
+	foreach v of local h_numeric {
+		capture assert missing(`v') | inlist(`v', 0, 1)
+		if _rc != 0 local nondummy `nondummy' `v'
+	}
+
 * Separate lists of vars and fvvars
 *-------------------------------------------------------------------------------
 	foreach v in `h' {
@@ -157,24 +168,14 @@ if "`quad'" != "noquad" {
 		}
 	}
 	
-	di "totry:  `totry'"
-	
 * Generate quadratic varaibles from linear model
 *-------------------------------------------------------------------------------
-
-	* Collect dummies
-	qui ds `h', has(type numeric)
-	local h_numeric `r(varlist)'
-	foreach v of local h_numeric {
-		capture assert missing(`v') | inlist(`v', 0, 1)
-		if _rc != 0 local nondummy `nondummy' `v'
-	}
 	
 	* Add quadratic terms of non-dummies
 	foreach z of local nondummy {
 		local totry `totry' c.`z'#c.`z'
 	}
-
+	
 	local quadvars `totry' // preserve list of all quadratic terms to try
 
 * Select second order terms
