@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.3 Jul 2016}{...}
+{* *! version 1.4 Nov 2016}{...}
 {cmd:help psestimate}{...}
 {hline}
 
@@ -19,7 +19,7 @@
 {synopthdr}
 {synoptline}
 {synoptset 20 tabbed}{...}
-{synopt:{opth t:otry(varlist)}} specify list of covariates to try; default is all{p_end}
+{synopt:{opth t:otry(indepvars)}} specify list of covariates to try; default is all{p_end}
 {synopt:{opth not:ry(varlist)}} specify list of covariates to exclude; default is none{p_end}
 {synopt:{opt nol:in}} prevent algorithm of testing linear terms{p_end}
 {synopt:{opt noq:uad}} prevent algorithm of testing quadratic terms{p_end}
@@ -28,6 +28,10 @@
 {synopt:{opt iter:ate(#)}} perform maximum of # iterations in each logit; default is 16000{p_end}
 {synopt:{opth genps:core(newvar)}} generate new variable with propensity score estimation{p_end}
 {synopt:{opth genl:or(newvar)}} generate new variable with log odds ratio{p_end}
+{synoptline}
+{p 4 6 2}
+{it:indepvars} may contain factor variables; see {help fvvarlist}.{p_end}
+
 
 {p 4 6 2}
 
@@ -36,7 +40,7 @@
 {pstd}
 The {cmd:psestimate} command estimates the propensity score proposed by {help psestimate##imbens_rubin_2015:Imbens and Rubin (2015)}.
 In particular, it implements the algorithm outlined by {help psestimate##imbens_2015:Imbens (2015)}, which estimates the propensity score for a binary dependent variable indicating treatment status.
-The main purpose of the program is to select a quadratic (or linear) function of covariates to include in the estimation function of the propensity score.
+The main purpose of the program is to select a linear or quadratic function of covariates to include in the estimation function of the propensity score.
 
 {pstd}
 A binary treatment variable must be specified as {help depvar:dependent variable}.
@@ -46,12 +50,12 @@ All specifications are fitted with a {manhelp logit R:logit} model by maximum li
 
 {pstd}
 The algorithm selects first order terms from all remaining variables of the dataset (i.e. excluding variables of the base model),
-unless a subset of variables is specified with the {opth totry(varlist)} option.
+unless a subset of variables is specified with the {opth totry(indepvars)} option.
 Specific variables may be excluded using the {opth notry(varlist)} option.
 
 {pstd}
 The selection of first order terms is performed in a stepwise fashion, comparing the base (nested) model to a model with one single additional covariate.
-A likelihood ratio test (LRT) to test the null hypothesis of the non-significance of the additional coefficient is performed (see {manhelp lrtest R:lrtest}).
+A likelihood ratio test (LRT) on the null hypothesis of non-significance of the additional coefficient is performed (see {manhelp lrtest R:lrtest}).
 All covariates that have not been included are tested and the algorithm selects the one associated with the highest LRT statistic,
 unless no covariate meets the LRT statistic threshold specified in {opth clinear(real)}. 
 This covariate is then included in the model.
@@ -120,7 +124,21 @@ The number in parenthesis corresponds to the upper bound of iterations the algor
 
 {pstd}
 The selection of linear terms is usually faster than that of quadratic ones.
-It is a good idea to start using the command with the {opt noquad} option and then, when linear terms are chosen, include them explicitely in {varlist} and use {opt nolin} to skip the first part.
+It is a good idea to start using the command with the {opt noquad} option and then, when linear terms are chosen, include them explicitely as {indepvars} and use {opt nolin} to skip the first stage.
+
+{marker remarks}{...}
+{title:Remarks on stored estimations limit}
+
+{pstd}
+Stata has a limit of 300 on the number of estimates it can store in memory.
+This limit may affect {cmd: psestimate} because it stores estimation results in memory to perform LRT on each additional term it is testing to select.
+When selecting first order terms {cmd: psestimate} will halt with an error if the total number of covariates to try is equal or greater than 300.
+
+{pstd}
+When selecting second order terms, {cmd: psestimate} will verify that the number of terms to try is not equal or greater than 300.
+This number is not obvious a priori, because it depends on how many first order covariates are selected.
+If the total number of first order covariates is equal or greater than 24, then {cmd: psestimate} will not try to select quadratic terms, in order to avoid an error.
+Further details regarding this limitation are discussed in {browse "https://acarril.github.io/posts/difficulties-limits-psestimate":this blog post}.
 
 {title:Examples}
 
