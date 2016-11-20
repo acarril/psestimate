@@ -130,7 +130,7 @@ It is a good idea to start using the command with the {opt noquad} option and th
 {title:Remarks on stored estimations limit}
 
 {pstd}
-Stata has a limit of 300 on the number of estimates it can store in memory.
+Stata has a limit of 300 on the number of estimates it can store in memory (see {help limits}).
 This limit may affect {cmd: psestimate} because it stores estimation results in memory to perform LRT on each additional term it is testing to select.
 When selecting first order terms {cmd: psestimate} will halt with an error if the total number of covariates to try is equal or greater than 300.
 
