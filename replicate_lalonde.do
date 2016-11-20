@@ -1,5 +1,5 @@
-*cd "/Users/alvaro/Library/Application Support/Stata/ado/personal/psestimate"
-cd "C:\ado\personal\psestimate"
+cd "/Users/alvaro/Library/Application Support/Stata/ado/personal/psestimate"
+*cd "C:\ado\personal\psestimate"
 
 discard
 

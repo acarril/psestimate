@@ -1,4 +1,4 @@
-*! 1.4 Alvaro Carril 17nov2016
+*! 1.4 Alvaro Carril 20nov2016
 program define psestimate, rclass
 	version 11
 	
@@ -85,15 +85,15 @@ if "`lin'" != "nolin" {
 				local estrep = `estrep'+1
 				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 				if _rc == 0 {
-					estimates store `v'
-					qui lrtest null `v', force
+					estimates store est`estrep'
+					qui lrtest null est`estrep', force
 					if (`r(chi2)' >= `llrt_max') {
 						local v_max `v' // store covariate with max llrt stats
 						local llrt_max = `r(chi2)' // update maximum llrt stat
 						capture estimates drop v_max
-						qui estimates restore `v'
+						qui estimates restore est`estrep'
 						estimates store v_max
-						estimates drop `v'
+						estimates drop est`estrep'
 					}
 				}
 				local N_foc : list sizeof totry
