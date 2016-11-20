@@ -39,12 +39,12 @@ if ("`lin'" == "nolin" & "`quad'" == "noquad") {
 * Define totry list
 if missing("`totry'") {
 	unab totry: _all
-	unab temp: __00* 
-	local totry: list totry - temp
+	unab temp: __00*
+	local totry: list totry - temp // remove tempvar
 }
 fvrevar `varlist', list
 local varlist_unop `r(varlist)'
-local totry : list totry - varlist_unop
+local totry : list totry - varlist_unop // remove (unoperated) varlist variables
 local totry : list totry - notry
 
 * Extract treatment variable and base covariates from varlist
@@ -195,6 +195,12 @@ if "`quad'" != "noquad" {
 	local llrt_max = `C_qua'
 	local estrep = 0
 	while `llrt_max' >= `C_qua' {
+		* Halt program if totry list exceeds 299 vars (estimates store limit)
+		if `: list sizeof totry' >= 300 {
+			di as text "Storing estimates for `: list sizeof totry' second order terms exceeds limit (see {help limits})"
+			di as error "No second order covariates selected"
+			continue, break
+		}
 		local llrt_max = `C_qua'
 		if !missing("`totry'") {
 			foreach v in `totry' {
