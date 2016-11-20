@@ -129,19 +129,21 @@ if "`lin'" != "nolin" {
 *-------------------------------------------------------------------------------
 * Select second order covariates (steps 6-10)
 *-------------------------------------------------------------------------------
-if "`quad'" != "noquad" { 
+if "`quad'" != "noquad" {
+
+	local totry // clear totry varlist
 
 * Collect dummies to avoid interacting them
 *-------------------------------------------------------------------------------
-
-	* Collect dummies
+/*
 	qui ds `h', has(type numeric)
 	local h_numeric `r(varlist)'
 	foreach v of local h_numeric {
 		capture assert missing(`v') | inlist(`v', 0, 1)
 		if _rc != 0 local nondummy `nondummy' `v'
 	}
-
+*/
+	
 * Separate lists of vars and fvvars
 *-------------------------------------------------------------------------------
 	foreach v in `h' {
@@ -156,10 +158,9 @@ if "`quad'" != "noquad" {
 		}
 	}
 
-* Generate interactive variables from linear model
+* Generate two-way interactions from linear model
 *-------------------------------------------------------------------------------
 	local num_h : word count `h_fv'
-	local totry // clear totry varlist
 	forval i = 1/`num_h' {
 		forval j = 1/`=`i'-1' {
 			local x : word `i' of `h_fv'
@@ -168,14 +169,16 @@ if "`quad'" != "noquad" {
 		}
 	}
 	
-* Generate quadratic varaibles from linear model
+	di "totry: `totry'"
+	
+* Generate quadratic terms from linear model
 *-------------------------------------------------------------------------------
 	
-	* Add quadratic terms of non-dummies
-	foreach z of local nondummy {
-		local totry `totry' c.`z'#c.`z'
+	* Add quadratic terms
+	foreach v of local h_fv {
+		local totry `totry' `v'#`v'
 	}
-	
+	di "totry: `totry'"
 	local quadvars `totry' // preserve list of all quadratic terms to try
 
 * Select second order terms

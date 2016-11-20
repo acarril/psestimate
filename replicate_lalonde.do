@@ -23,4 +23,4 @@ drop *78
 * PSM algorithm
 ********************************************************************************
 
-psestimate treat, totry(age ed married i.black i.hisp)
+psestimate treat ed i.black i.hisp
