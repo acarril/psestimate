@@ -1,4 +1,4 @@
-*! 1.4 Alvaro Carril 20nov2016
+*! 1.5 Alvaro Carril 21nov2016
 program define psestimate, rclass
 	version 11
 	
@@ -13,7 +13,7 @@ syntax varlist(min=1 fv) [if] [in] [, ///
 	noLin ///
 	noQuad ///
 	]
-	
+
 marksample touse
 
 *-------------------------------------------------------------------------------
@@ -84,15 +84,15 @@ if "`lin'" != "nolin" {
 				local estrep = `estrep'+1
 				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 				if _rc == 0 {
-					estimates store est`estrep'
-					qui lrtest null est`estrep', force
+					estimates store current
+					qui lrtest null current, force
 					if (`r(chi2)' >= `llrt_max') {
 						local v_max `v' // store covariate with max llrt stats
 						local llrt_max = `r(chi2)' // update maximum llrt stat
 						capture estimates drop v_max
-						qui estimates restore est`estrep'
+						qui estimates restore current
 						estimates store v_max
-						estimates drop est`estrep'
+						estimates drop current
 					}
 				}
 				local N_foc : list sizeof totry
@@ -207,15 +207,15 @@ if "`quad'" != "noquad" {
 				local estrep = `estrep'+1
 				capture quietly logit `treatvar' `h' `v' if `touse', `iterate'
 				if _rc == 0 {
-					estimates store est`estrep'
-					qui lrtest null est`estrep', force
+					estimates store current
+					qui lrtest null current, force
 					if (`r(chi2)' >= `llrt_max') {
 						local v_max `v' // store covariate with max llrt stats
 						local llrt_max = `r(chi2)' // update maximum llrt stat
 						capture estimates drop v_max
-						qui estimates restore est`estrep'
+						qui estimates restore current
 						estimates store v_max
-						estimates drop est`estrep'
+						estimates drop current
 					}
 				}
 				local N_soc : list sizeof totry

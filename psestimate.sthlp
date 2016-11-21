@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.4 Nov 2016}{...}
+{* *! version 1.5 Nov 2016}{...}
 {cmd:help psestimate}{...}
 {hline}
 
@@ -113,7 +113,6 @@ See {manhelp logit R:logit} and {manhelp maximize R:maximize} for additional inf
 {phang}
 {opth genlor(newvar)} specifies that a new variable with the log odds ratio of the estimated propensity score is generated, named {it: newvar}.
 
-
 {marker remarks}{...}
 {title:Remarks on executing time}
 
@@ -125,20 +124,6 @@ The number in parenthesis corresponds to the upper bound of iterations the algor
 {pstd}
 The selection of linear terms is usually faster than that of quadratic ones.
 It is a good idea to start using the command with the {opt noquad} option and then, when linear terms are chosen, include them explicitely as {indepvars} and use {opt nolin} to skip the first stage.
-
-{marker remarks}{...}
-{title:Remarks on stored estimations limit}
-
-{pstd}
-Stata has a limit of 300 on the number of estimates it can store in memory (see {help limits}).
-This limit may affect {cmd: psestimate} because it stores estimation results in memory to perform LRT on each additional term it is testing to select.
-When selecting first order terms {cmd: psestimate} will halt with an error if the total number of covariates to try is equal or greater than 300.
-
-{pstd}
-When selecting second order terms, {cmd: psestimate} will verify that the number of terms to try is not equal or greater than 300.
-This number is not obvious a priori, because it depends on how many first order covariates are selected.
-If the total number of first order covariates is equal or greater than 24, then {cmd: psestimate} will not try to select quadratic terms, in order to avoid an error.
-Further details regarding this limitation are discussed in {browse "https://acarril.github.io/posts/difficulties-limits-psestimate":this blog post}.
 
 {title:Examples}
 
