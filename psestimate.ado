@@ -1,10 +1,10 @@
-*! 1.5.1 Alvaro Carril 21nov2016
+*! 1.5.2 Alvaro Carril 25nov2016
 program define psestimate, rclass
 	version 11
 	
-syntax varlist(min=1 fv) [if] [in] [, ///
-	Totry(varlist fv) ///
-	NOTry(varlist) ///
+syntax varlist(min=1 numeric fv) [if] [in] [, ///
+	Totry(varlist numeric fv) ///
+	NOTry(varlist numeric) ///
 	CLinear(real 1) ///
 	CQuadratic(real 2.71) ///
 	ITERate(passthru) ///
