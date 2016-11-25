@@ -1,3 +1,5 @@
 replicate_lalonde.do
 .DS_Store
 replicate_lalonde.do
+
+*.dta
