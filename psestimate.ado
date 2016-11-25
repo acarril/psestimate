@@ -1,4 +1,4 @@
-*! 1.5 Alvaro Carril 21nov2016
+*! 1.5.1 Alvaro Carril 21nov2016
 program define psestimate, rclass
 	version 11
 	
@@ -117,6 +117,7 @@ if "`lin'" != "nolin" {
 			local estrep 0
 		}
 		else {
+			nois _dots `rep++' 0
 			if !missing("`K_l'") {
 				di as text _newline "Selected first order covariates are: " as result "`K_l'"
 			}
@@ -240,6 +241,7 @@ if "`quad'" != "noquad" {
 			local estrep 0
 		}
 		else {
+			nois _dots `rep++' 0
 			if !missing("`K_q'") {
 				di as text _newline "Selected second order covariates are: " as result "`K_q'"
 			}
