@@ -1,4 +1,4 @@
-*! 1.5.2 Alvaro Carril 25nov2016
+*! 1.6 Alvaro Carril 25nov2016
 program define psestimate, rclass
 	version 11
 	
@@ -278,7 +278,7 @@ if "`genlor'" != "" {
 	}
 }
 else {
-	if "`genpshat'" != "" {
+	if "`genpscore'" != "" {
 		qui rename `ps' `genpscore'
 		lab var `genpscore' "Propensity Score"
 	}
